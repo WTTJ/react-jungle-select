@@ -1,0 +1,21 @@
+@import "helpers/resets"
+@import "helpers/variables"
+
+.preview
+  flex: 1
+  padding: 40px 40px 60px 40px
+  background-color: $white
+
+  h2
+    display: flex
+    align-items: center
+    margin-bottom: 20px
+    color: $grey-600
+    font: normal 21px/25px $font
+    &::before
+      content: ''
+      align-self: stretch
+      width: 4px
+      margin-right: 20px
+      background-color: $green-500
+      border-radius: 4px
