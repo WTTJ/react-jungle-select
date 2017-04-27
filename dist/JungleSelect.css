@@ -1,0 +1,176 @@
+.jungle-select {
+  position: relative;
+  max-width: 300px;
+  font: normal 16px/19px "Helvetica Neue", "Helvetica", "Arial", "sans-serif"; }
+  .jungle-select *:focus, .jungle-select:focus {
+    outline: none; }
+  .jungle-select.jungle-select-focused.mode-select .jungle-select-filter, .jungle-select.jungle-select-focused.mode-list .jungle-select-filter {
+    border-color: #5E9ED6;
+    box-shadow: 0 0 5px #9ECAED; }
+  .jungle-select.jungle-select-opened.mode-select .jungle-select-filter {
+    border-bottom-color: #CCC;
+    border-radius: 4px 4px 0 0; }
+    .jungle-select.jungle-select-opened.mode-select .jungle-select-filter::after {
+      transform: rotateZ(-180deg); }
+  .jungle-select.jungle-select-filtered .jungle-select-filter .jungle-select-selected-values {
+    display: none; }
+  .jungle-select.mode-list .jungle-select-item {
+    border-left: 1px solid #EEE; }
+  .jungle-select.mode-list .jungle-select-show-all {
+    border-left: 1px solid #AAA; }
+  .jungle-select.mode-list .jungle-select-filter {
+    border-color: #CCC; }
+  .jungle-select.mode-list .jungle-select-clear {
+    right: 10px; }
+  .jungle-select.mode-list .jungle-select-list {
+    margin-top: 10px; }
+  .jungle-select.mode-select .jungle-select-filter {
+    border-color: #CCC; }
+    .jungle-select.mode-select .jungle-select-filter::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 15px;
+      bottom: 0;
+      height: 0;
+      margin: auto;
+      border-top: 6px solid #D7D7D9;
+      border-right: 5px solid transparent;
+      border-bottom: none;
+      border-left: 5px solid transparent;
+      transform: rotateZ(0);
+      transition: transform 0.3s; }
+  .jungle-select.mode-select .jungle-select-list {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    max-height: 312px;
+    overflow: auto;
+    border: 1px solid #CCC;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+    z-index: 1; }
+  .jungle-select .jungle-select-controls {
+    position: relative;
+    cursor: pointer;
+    color: #777777; }
+    .jungle-select .jungle-select-controls:empty {
+      display: none; }
+  .jungle-select .jungle-select-label {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    padding: 5px 0;
+    line-height: 16px;
+    color: #AFAFB3;
+    font-size: 13px; }
+    .jungle-select .jungle-select-label + .jungle-select-filter {
+      margin-top: 26px; }
+  .jungle-select .jungle-select-clear {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin: auto;
+    line-height: 20px;
+    cursor: pointer;
+    color: #E49F9F;
+    font-size: 14px;
+    background-color: #FFF2F2;
+    border-radius: 50%;
+    transition: color 0.2s; }
+    .jungle-select .jungle-select-clear:hover {
+      color: red; }
+  .jungle-select .jungle-select-list {
+    color: #777777;
+    background-color: white; }
+    .jungle-select .jungle-select-list:empty {
+      display: none; }
+  .jungle-select .jungle-select-filter {
+    display: block;
+    position: relative;
+    width: 100%;
+    min-height: 40px;
+    padding: 5px 57px 5px 15px;
+    overflow: hidden;
+    border: 1px solid transparent;
+      border-radius: 4px;
+    box-sizing: border-box; }
+    .jungle-select .jungle-select-filter input,
+    .jungle-select .jungle-select-filter .jungle-select-selected-values {
+      font: inherit;
+      box-sizing: border-box;
+      color: #777777; }
+    .jungle-select .jungle-select-filter input {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      margin: auto;
+      padding: 0 57px 0 15px;
+      border: none;
+      width: 5px;
+      background-color: transparent; }
+      .jungle-select .jungle-select-filter input:focus {
+        width: 100%; }
+    .jungle-select .jungle-select-filter .jungle-select-selected-values {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      width: 100%;
+      min-height: 28px; }
+    .jungle-select .jungle-select-filter .jungle-select-placeholder {
+      color: #D7D7D9; }
+    .jungle-select .jungle-select-filter .jungle-select-selected-value,
+    .jungle-select .jungle-select-filter .jungle-select-placeholder {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+    .jungle-select .jungle-select-filter .jungle-select-selected-value:not(:only-child) {
+      width: 30.33%;
+      max-width: 100px;
+      height: 100%;
+      max-height: 24px;
+      margin: 2px 3% 2px 0;
+      padding: 0 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 24px;
+      color: #00C29A;
+      font-size: 12px;
+      background-color: #F5FCFA;
+      border: 1px solid #00C29A;
+        border-radius: 3px;
+      box-sizing: border-box; }
+  .jungle-select .jungle-select-group-title {
+    text-transform: uppercase;
+    line-height: 32px;
+    color: rgba(0, 0, 0, 0.25);
+    font-size: 10px; }
+  .jungle-select .jungle-select-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-left: 3px solid transparent;
+    background-color: white; }
+    .jungle-select .jungle-select-item:hover, .jungle-select .jungle-select-item.hover {
+      background-color: #F5FCFA; }
+    .jungle-select .jungle-select-item.selected {
+      cursor: not-allowed;
+      border-color: #00C29A; }
+      .jungle-select .jungle-select-item.selected:hover, .jungle-select .jungle-select-item.selected.hover {
+        background-color: #F5FCFA; }
+  .jungle-select .jungle-select-show-all {
+    padding: 10px 15px;
+    display: block;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 12px; }

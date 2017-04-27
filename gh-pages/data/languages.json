@@ -1,0 +1,59 @@
+{
+  "groups": [
+    {
+      "id": "backend",
+      "label": "Backend"
+    },
+    {
+      "id": "frontend",
+      "label": "Frontend"
+    }
+  ],
+  "items": [
+    {
+      "groupId": "backend",
+      "label": "Ruby"
+    },
+    {
+      "groupId": "backend",
+      "label": "Python"
+    },
+    {
+      "groupId": "backend",
+      "label": "Go"
+    },
+    {
+      "groupId": "backend",
+      "label": "C++"
+    },
+    {
+      "groupId": "backend",
+      "label": "Perl"
+    },
+    {
+      "groupId": "backend",
+      "label": "Crystal"
+    },
+    {
+      "groupId": "backend",
+      "label": "Elixir"
+    },
+    {
+      "groupId": "frontend",
+      "label": "Javascript"
+    },
+    {
+      "groupId": "frontend",
+      "label": "HTML"
+    },
+    {
+      "groupId": "frontend",
+      "label": "CSS"
+    },
+    {
+      "groupId": "frontend",
+      "label": "HAML"
+    }
+  ]
+}
+

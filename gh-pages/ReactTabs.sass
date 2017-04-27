@@ -1,0 +1,41 @@
+@import "helpers/variables"
+
+.react-tabs
+  [role="tablist"]
+    display: flex
+    margin-bottom: 26px
+
+    [role="tab"]
+      position: relative
+      margin-right: 10px
+      padding: 5px 7px
+      cursor: pointer
+      color: rgba($white, 0.5)
+      font: normal 12px/14px $font
+      border-radius: 2px
+      transition: color 0.5s
+
+      &:hover::before
+        transform: scaleX(1)
+
+      &::before
+        content: ''
+        position: absolute
+        top: 0
+        right: 0
+        bottom: 0
+        left: 0
+        background-color: rgba($black, 0.15)
+        border-radius: 2px
+        transform: scaleX(0)
+          origin: left center
+        transition: 0.2s
+
+      &[aria-selected="true"]
+        color: $green-500
+        background-color: $grey-700
+
+      &:focus
+        box-shadow: none
+        border: none
+        outline: none

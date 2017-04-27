@@ -1,0 +1,8 @@
+/gh-pages
+/node_modules
+/src
+/webpack.config.js
+/test
+/coverage
+/yarn.lock
+/docs

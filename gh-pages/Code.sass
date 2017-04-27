@@ -1,0 +1,17 @@
+@import "helpers/resets"
+@import "helpers/variables"
+
+.code
+  flex: 1
+  max-width: calc((100vw - 250px) / 2)
+  padding: 40px 40px 60px 40px
+  background-color: $grey-600
+  box-sizing: border-box
+  &.first-child
+    padding-top: 40px
+
+  pre
+    flex: 1
+    font-size: 13px
+    background-color: $grey-700
+    border-radius: 5px

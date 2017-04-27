@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/react-jungle-select
+    docker:
+      - image: circleci/node:6.11.0
+    steps:
+      - checkout
+      - run:
+          name: install-yarn
+          command: 'curl -o- -L https://yarnpkg.com/install.sh | bash'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm-packages
+          command: yarn install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: test
+          command: yarn test

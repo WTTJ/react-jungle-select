@@ -1,0 +1,47 @@
+@import "helpers/resets"
+@import "helpers/variables"
+
+.main-navigation
+  position: fixed
+  top: 60px
+  bottom: 0
+  left: 0
+  width: 250px
+  padding: 20px 0 0 0
+  background-color: $grey-100
+  box-sizing: border-box
+  z-index: 1
+
+  a
+    display: block
+    position: relative
+    padding: 10px 25px 10px 30px
+    border-left: 5px solid transparent
+    color: $grey-600
+    font: normal 14px/18px $font
+    transition: 0.2s
+
+    &::before
+      content: ''
+      position: absolute
+      top: 0
+      right: 0
+      bottom: 0
+      left: 0
+      background: rgba($black, 0.05)
+      transform: scaleX(0)
+        origin: left center
+      transition: 0.4s
+
+    &:hover
+      border-left-color: $grey-800
+      color: $black
+      &:before
+        transform: scaleX(1)
+
+    &.active
+      border-left-color: $green-500
+      color: $black
+      &:before
+        background: rgba($black, 0.08)
+        transform: scaleX(1)
