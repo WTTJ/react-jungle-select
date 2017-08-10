@@ -1,7 +1,7 @@
 .jungle-select
   position: relative
   max-width: 300px
-  font: normal 16px/19px "HKCompakt", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"
+  font: normal 16px/19px "Helvetica Neue", "Helvetica", "Arial", "sans-serif"
 
   *:focus, &:focus
     outline: none
@@ -15,7 +15,7 @@
   &.jungle-select-opened.mode-select
     .jungle-select-filter
       border:
-        bottom-color: #EEEEEE
+        bottom-color: #CCC
         radius: 4px 4px 0 0
       &::after
         transform: rotateZ(-180deg)
@@ -25,16 +25,20 @@
       display: none
 
   &.mode-list
+    .jungle-select-item
+      border-left: 1px solid #EEE
+    .jungle-select-show-all
+      border-left: 1px solid #AAA
     .jungle-select-filter
-      border-color: #EEEEEE
+      border-color: #CCC
     .jungle-select-clear
-      right: 5px
+      right: 10px
     .jungle-select-list
       margin-top: 10px
 
   &.mode-select
     .jungle-select-filter
-      border-color: #EEEEEE
+      border-color: #CCC
       &::after
         content: ''
         position: absolute
@@ -58,7 +62,7 @@
       left: 0
       max-height: 312px
       overflow: auto
-      border: 1px solid #EEEEEE
+      border: 1px solid #CCC
         top: none
         radius: 0 0 4px 4px
       z-index: 1
@@ -86,17 +90,17 @@
     position: absolute
     top: 0
     bottom: 0
-    right: 32px
+    right: 36px
     display: flex
     align-items: center
     justify-content: center
-    width: 22px
+    width: 20px
     height: 20px
     margin: auto
     line-height: 20px
     cursor: pointer
     color: #E49F9F
-    font-size: 18px
+    font-size: 14px
     background-color: #FFF2F2
     border-radius: 50%
     transition: color 0.2s
@@ -173,14 +177,13 @@
       box-sizing: border-box
 
   .jungle-select-group-title
-    padding-left: 20px
     text-transform: uppercase
     line-height: 32px
     color: rgba(black, 0.25)
     font-size: 10px
 
   .jungle-select-item
-    padding: 10px 30px
+    padding: 10px 15px
     cursor: pointer
     white-space: nowrap
     overflow: hidden
@@ -188,7 +191,6 @@
     border-left: 3px solid transparent
     background-color: white
     &:hover, &.hover
-      border-color: #00C29A
       background-color: #F5FCFA
 
     &.selected
@@ -196,3 +198,10 @@
       border-color: #00C29A
       &:hover, &.hover
         background-color: #F5FCFA
+
+  .jungle-select-show-all
+    padding: 10px 15px
+    display: block
+    cursor: pointer
+    text-decoration: underline
+    font-size: 12px
