@@ -11,7 +11,9 @@ export default class Groups extends Component {
     return (
       <div>
         {value &&
-          <div>«{value.label}» in group «{value.groupId}» selected!</div>
+          <div className='preview-selection'>
+            <strong>{value.label}</strong> in group <strong>{value.groupId}</strong> selected!
+          </div>
         }
         <JungleSelect
           items={languages.items}

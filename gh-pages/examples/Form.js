@@ -11,10 +11,14 @@ export default class Form extends Component {
     return (
       <div>
         {value1 &&
-          <div>narco #1 «{value1}»!</div>
+          <div className='preview-selection'>
+            Narco #1 <strong>{value1}</strong>!
+          </div>
         }
         {value2 &&
-          <div>narco #2 «{value2}»!</div>
+          <div className='preview-selection'>
+            Narco #2 <strong>{value2}</strong>!
+          </div>
         }
         <form>
           <div>

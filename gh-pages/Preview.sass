@@ -6,6 +6,13 @@
   padding: 40px 40px 60px 40px
   background-color: $white
 
+  h1
+    display: flex
+    align-items: center
+    margin-bottom: 20px
+    color: $grey-600
+    font: normal 28px/28px $font
+
   h2
     display: flex
     align-items: center
@@ -19,3 +26,39 @@
       margin-right: 20px
       background-color: $green-500
       border-radius: 4px
+
+  .preview-description
+    font: normal 14px/20px $font
+
+    .text-small
+      font: normal 12px/18px $font
+
+    a
+      text-decoration: underline
+      &:hover
+        color: $green-500
+
+    p, ul
+      margin-bottom: 15px
+      white-space: pre-line
+      color: $grey-300
+
+    ul > li
+      position: relative
+      margin-left: 30px
+      margin-bottom: 10px
+      &:last-child
+        margin-bottom: 0
+      &::before
+        content: '●'
+        position: absolute
+        left: -20px
+        top: 0
+        color: $green-500
+
+  .preview-selection
+    padding: 15px
+    margin-bottom: 10px
+    background: $grey-100
+    border-radius: 5px
+    font: normal 14px/18px $font

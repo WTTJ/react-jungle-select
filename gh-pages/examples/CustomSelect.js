@@ -10,6 +10,11 @@ export default class CustomSelect extends Component {
     const { value, focus } = this.state
     return (
       <div>
+        {value &&
+          <div className='preview-selection'>
+            <strong>{value}</strong> selected!
+          </div>
+        }
         <button
           className='btn'
           onClick={() => this.setState({ focus: !this.state.focus })}

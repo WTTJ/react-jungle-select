@@ -11,15 +11,22 @@ export default class Limit extends Component {
     return (
       <div>
         {value &&
-          <div>«{value}» selected!</div>
+          <div className='preview-selection'>
+            <strong>{value}</strong> selected!
+          </div>
         }
         <JungleSelect
           items={simpsons}
           renderItem={(item) => item }
           searchable={true}
-          limit={10}
           onChange={(value) => this.setState({ value })}
           mode='list'
+          limit={5}
+          renderShowAll={(showAll, onToggle) =>
+            <a className='jungle-select-show-all' onClick={onToggle}>
+              {showAll ? 'Less Simpsons...' : 'More Simpsons...'}
+            </a>
+          }
         />
       </div>
     )

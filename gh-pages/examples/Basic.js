@@ -12,7 +12,9 @@ export default class Basic extends Component {
     return (
       <div>
         {value &&
-          <div>«{value}» selected!</div>
+          <div className='preview-selection'>
+            <strong>{value}</strong> selected!
+          </div>
         }
         <JungleSelect
           items={narcos}

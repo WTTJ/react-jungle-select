@@ -11,7 +11,9 @@ export default class Group extends Component {
     return (
       <div>
         {value &&
-          <div>«{value.label}» in group «{value.groupId}» selected!</div>
+          <div className='preview-selection'>
+            <strong>{value.label}</strong> in group <strong>{value.groupId}</strong> selected!
+          </div>
         }
         <JungleSelect
           items={languages.items}
@@ -21,13 +23,8 @@ export default class Group extends Component {
           searchable={true}
           searchableAttributes={['label']}
           label='Search:'
-          cancelFilter={
-            <span style={{color: 'red'}}>
-              Cancel
-            </span>
-          }
           listWrapper={(list) =>
-            <div style={{border: '1px solid #eeeeee', borderRadius: 3}}>
+            <div style={{border: '1px solid #eeeeee', borderRadius: 3, padding: 15}}>
               {list}
             </div>
           }

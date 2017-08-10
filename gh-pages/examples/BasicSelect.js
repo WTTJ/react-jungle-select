@@ -10,6 +10,11 @@ export default class BasicSelect extends Component {
     const { value } = this.state
     return (
       <div>
+        {value &&
+          <div className='preview-selection'>
+            <strong>{value}</strong> selected!
+          </div>
+        }
         <JungleSelect
           selected={value}
           onChange={(value) => this.setState({ value }) }

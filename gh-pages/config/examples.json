@@ -1,68 +1,77 @@
 [
   {
     "id": "basic",
-    "name": "List / Basic",
+    "name": "Simple List",
     "js": "Basic",
-    "json": "narcos"
+    "json": "narcos",
+    "description": "Click on one of the items below."
   },
   {
     "id": "basic-select",
-    "name": "Select / Basic",
+    "name": "Simple Select",
     "js": "BasicSelect",
-    "json": "narcos"
+    "json": "narcos",
+    "description": "Select one of the items below and then use your keyboard to navigate."
   },
   {
     "id": "groups",
-    "name": "List / Groups",
+    "name": "List with Groups",
     "js": "Groups",
-    "json": "languages"
+    "json": "languages",
+    "description": "Click on one of the items below and then use your keyboard to navigate."
   },
   {
     "id": "limit",
-    "name": "List / Limit",
+    "name": "List with Search & Limit",
     "js": "Limit",
     "json": "simpsons"
   },
   {
     "id": "scroll-keyboard",
-    "name": "List / Scroll Keyboard",
+    "name": "List with Scrollbar",
     "js": "ScrollKeyboard",
-    "sass": "ScrollKeyboard"
+    "sass": "ScrollKeyboard",
+    "description": "Use the keyboard navigation and you should see the scrollbar following your moves!"
   },
   {
     "id": "custom-select",
-    "name": "Select / Custom",
+    "name": "Select with Custom Behavior",
     "js": "CustomSelect",
-    "json": "simpsons"
+    "json": "simpsons",
+    "description": "Use the following button to take the focus on the select below. This behavior can be particularly useful when you have a your select in a popover and you don't want your users to click twice in order to use the select."
   },
   {
-    "id": "custom-render",
-    "name": "List / Custom Render",
-    "js": "CustomSelect",
-    "json": "languages"
+    "id": "custom-list",
+    "name": "List with Custom Wrapper",
+    "js": "CustomList",
+    "json": "languages",
+    "description": "In order to map your styling guidelines, you may need a custom list wrapper (in order to use react-transition-group for example). Here is how to customize it."
   },
   {
     "id": "immutable",
-    "name": "Select / Immutable",
+    "name": "Select with Immutable JS",
     "js": "ImmutableExample",
     "json": "simpsons"
   },
   {
     "id": "custom-filter",
-    "name": "Select / Custom Filter",
+    "name": "Select with Custom Filter",
     "js": "CustomFilter",
-    "json": "narcos"
+    "json": "narcos",
+    "description": "Once your select/list is 'searchable', you can also customize the search experience you are providing to your users through 'filterItem'.\n\nThe example below shows you how to search for multiple strings without taking care of their order. ('ochoa fabio' will be the same as 'fabio ochoa')"
   },
   {
     "id": "form",
-    "name": "Select / Form",
+    "name": "Select in a basic Form",
     "js": "Form",
-    "json": "narcos"
+    "json": "narcos",
+    "description": "This is just an example to show you how well React-Jungle-Select works in a basic form. (take the focus on the first input and then use 'tab' or 'shift + tab')"
   },
   {
     "id": "multiple-select",
-    "name": "Select / Multiple",
+    "name": "Multi Select",
     "js": "MultipleSelect",
-    "json": "narcos"
+    "json": "narcos",
+    "description": "Select at least 2 items in order to see the behavior."
   }
 ]

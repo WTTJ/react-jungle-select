@@ -11,7 +11,9 @@ export default class MultipleSelect extends Component {
     return (
       <div>
         {values.map((value, i) =>
-          <div key={i}>«{value}» selected!</div>
+          <div className='preview-selection' key={i}>
+            <strong>{value}</strong> selected!
+          </div>
         )}
         <JungleSelect
           searchable={true}
