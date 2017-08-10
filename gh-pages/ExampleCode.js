@@ -16,7 +16,7 @@ export default function ExampleCode(props) {
         <Tab>JS</Tab>
         <Tab>SASS</Tab>
         <Tab>CSS</Tab>
-        {props.json && <Tab>JSON</Tab>}
+        {props.json && <Tab>DATA</Tab>}
       </TabList>
       <TabPanel>
         <Prism language="jsx">

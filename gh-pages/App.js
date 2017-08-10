@@ -12,7 +12,10 @@ export default function App() {
     <main className="react-jungle-select">
       <header className='title'>
         <Logo />
-        <a className='btn' href='https://github.com/WTTJ/react-jungle-select'>
+        <a
+          className='btn'
+          href='https://github.com/WTTJ/react-jungle-select'
+          target='_blank'>
           <i className='zmdi zmdi-github'></i>
           View on github
         </a>
