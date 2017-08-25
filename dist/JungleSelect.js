@@ -44,6 +44,10 @@ var JungleSelect = function (_Component) {
   function JungleSelect(props) {
     _classCallCheck(this, JungleSelect);
 
+    if (props.limit && props.groups) {
+      console.warn("[JungleSelect] Cannot use limit with groups.");
+    }
+
     var _this = _possibleConstructorReturn(this, (JungleSelect.__proto__ || Object.getPrototypeOf(JungleSelect)).call(this, props));
 
     _this.state = {
@@ -52,12 +56,10 @@ var JungleSelect = function (_Component) {
       center: true,
       showAll: false,
       listOpened: !_this.selectMode(),
-      focused: false
+      focused: false,
+      sortedItems: []
     };
 
-    if (props.limit && props.groups) {
-      console.warn("[JungleSelect] Cannot use limit with groups.");
-    }
     _this.itemElements = [];
     return _this;
   }
@@ -70,15 +72,56 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.props.autofocus && this.focus();
-      this.props.initialFilter && this.setState({ filter: this.props.initialFilter });
+      var _props = this.props,
+          autofocus = _props.autofocus,
+          initialFilter = _props.initialFilter,
+          items = _props.items;
+
+      this.computeItems(items);
+      autofocus && this.focus();
+      initialFilter && this.setState({ filter: initialFilter });
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (this.props.initialFilter !== nextProps.initialFilter) {
+      var _props2 = this.props,
+          groups = _props2.groups,
+          items = _props2.items,
+          initialFilter = _props2.initialFilter;
+
+      if (initialFilter !== nextProps.initialFilter) {
         this.setState({ filter: nextProps.initialFilter });
       }
+      if (groups !== nextProps.groups || items !== nextProps.items) {
+        this.computeItems(nextProps.items);
+      }
+    }
+  }, {
+    key: 'computeItems',
+    value: function computeItems(items) {
+      var groups = this.props.groups;
+
+      var sortedItems = void 0;
+      if (groups) {
+        if (_immutable2.default.List.isList(items)) {
+          sortedItems = _immutable2.default.List();
+          groups.forEach(function (group) {
+            sortedItems = sortedItems.concat(items.filter(function (i) {
+              return i.get('groupId') === group.get('id');
+            }));
+          });
+        } else {
+          sortedItems = [];
+          groups.forEach(function (group) {
+            sortedItems = sortedItems.concat(items.filter(function (i) {
+              return i.groupId === group.id;
+            }));
+          });
+        }
+      } else {
+        sortedItems = items;
+      }
+      this.setState({ sortedItems: sortedItems });
     }
   }, {
     key: 'componentDidUpdate',
@@ -114,10 +157,10 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'itemAtIndex',
     value: function itemAtIndex(index) {
-      var items = this.props.items;
+      var sortedItems = this.state.sortedItems;
 
-      var list = this.filteredItems(items);
-      if (_immutable2.default.List.isList(items)) {
+      var list = this.filteredItems(sortedItems);
+      if (_immutable2.default.List.isList(sortedItems)) {
         return list.get(index);
       } else {
         return list[index];
@@ -126,16 +169,16 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'indexOfItem',
     value: function indexOfItem(item) {
-      var items = this.props.items;
+      var sortedItems = this.state.sortedItems;
 
-      return this.filteredItems(items).indexOf(item);
+      return this.filteredItems(sortedItems).indexOf(item);
     }
   }, {
     key: 'itemsCount',
     value: function itemsCount() {
-      var items = this.props.items;
+      var sortedItems = this.state.sortedItems;
 
-      var list = this.filteredItems(items);
+      var list = this.filteredItems(sortedItems);
       if (_immutable2.default.List.isList(list)) {
         return list.size;
       } else {
@@ -209,10 +252,10 @@ var JungleSelect = function (_Component) {
     key: 'onClear',
     value: function onClear(e) {
       e && e.preventDefault();
-      var _props = this.props,
-          onEscape = _props.onEscape,
-          onFilter = _props.onFilter,
-          clearable = _props.clearable;
+      var _props3 = this.props,
+          onEscape = _props3.onEscape,
+          onFilter = _props3.onFilter,
+          clearable = _props3.clearable;
       var _state2 = this.state,
           filter = _state2.filter,
           listOpened = _state2.listOpened;
@@ -232,9 +275,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'filter',
     value: function filter(e) {
-      var _props2 = this.props,
-          onFilter = _props2.onFilter,
-          selectFirstItem = _props2.selectFirstItem;
+      var _props4 = this.props,
+          onFilter = _props4.onFilter,
+          selectFirstItem = _props4.selectFirstItem;
 
       var filter = e.target ? e.target.value : e;
       if (onFilter) {
@@ -249,9 +292,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'filteredItems',
     value: function filteredItems(items) {
-      var _props3 = this.props,
-          filterItem = _props3.filterItem,
-          searchableAttributes = _props3.searchableAttributes;
+      var _props5 = this.props,
+          filterItem = _props5.filterItem,
+          searchableAttributes = _props5.searchableAttributes;
       var filter = this.state.filter;
 
       var filtered = items;
@@ -304,14 +347,14 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'itemsForGroup',
     value: function itemsForGroup(group) {
-      var items = this.props.items;
+      var sortedItems = this.state.sortedItems;
 
-      if (_immutable2.default.List.isList(items)) {
-        return items.filter(function (item) {
+      if (_immutable2.default.List.isList(sortedItems)) {
+        return sortedItems.filter(function (item) {
           return item.get('groupId') === group.get('id');
         });
       } else {
-        return items.filter(function (item) {
+        return sortedItems.filter(function (item) {
           return item.groupId === group.id;
         });
       }
@@ -321,11 +364,11 @@ var JungleSelect = function (_Component) {
     value: function renderList() {
       var _this2 = this;
 
-      var _props4 = this.props,
-          groups = _props4.groups,
-          items = _props4.items,
-          renderGroup = _props4.renderGroup,
-          limit = _props4.limit;
+      var _props6 = this.props,
+          groups = _props6.groups,
+          renderGroup = _props6.renderGroup,
+          limit = _props6.limit;
+      var sortedItems = this.state.sortedItems;
       var showAll = this.state.showAll;
 
       var counter = -1;
@@ -354,8 +397,8 @@ var JungleSelect = function (_Component) {
           );
         });
       } else {
-        var limited = this.filteredAndLimitedItems(items);
-        var filtered = this.filteredItems(items);
+        var limited = this.filteredAndLimitedItems(sortedItems);
+        var filtered = this.filteredItems(sortedItems);
         var limitedSize = _immutable2.default.List.isList(limited) ? limited.size : limited.length;
         var filteredSize = _immutable2.default.List.isList(filtered) ? filtered.size : filtered.length;
         if (!limitedSize) {
@@ -501,9 +544,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderSelectedItems',
     value: function renderSelectedItems(items) {
-      var _props5 = this.props,
-          renderSelectedItem = _props5.renderSelectedItem,
-          renderItem = _props5.renderItem;
+      var _props7 = this.props,
+          renderSelectedItem = _props7.renderSelectedItem,
+          renderItem = _props7.renderItem;
 
       var renderFunction = renderSelectedItem || renderItem;
       return items.map(function (item, i) {
@@ -589,12 +632,12 @@ var JungleSelect = function (_Component) {
         'enter': this.selectHighlightedItem.bind(this),
         'esc': this.onClear.bind(this)
       };
-      var _props6 = this.props,
-          searchable = _props6.searchable,
-          listWrapper = _props6.listWrapper,
-          classList = _props6.classList,
-          clearable = _props6.clearable,
-          mode = _props6.mode;
+      var _props8 = this.props,
+          searchable = _props8.searchable,
+          listWrapper = _props8.listWrapper,
+          classList = _props8.classList,
+          clearable = _props8.clearable,
+          mode = _props8.mode;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
