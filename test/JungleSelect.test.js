@@ -103,7 +103,7 @@ describe('JungleSelect', () => {
         expect($el.find('.jungle-select-group').last().find('.jungle-select-item').last().text()).to.eq('bar2')
       })
 
-      test('render list of grouped  immutableobjects if renderItem and renderGroup given', () => {
+      test('render list of grouped immutableobjects if renderItem and renderGroup given', () => {
         const $el = mount(listComponent({
           items: Immutable.fromJS([
             { label: 'foo1', groupId: 'hello' },
@@ -568,6 +568,35 @@ describe('JungleSelect', () => {
         expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
         expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
       })
+
+      test('toggle hover on immutable groups/items when MouseEnter/Leave', () => {
+        const $el = mount(listComponent({
+          // /!\ Order matters to check items ordering by group is done
+          items: Immutable.fromJS([
+            { label: 'bar1', groupId: 'bar' },
+            { label: 'foo1', groupId: 'foo' },
+            { label: 'foo2', groupId: 'foo' },
+            { label: 'bar2', groupId: 'bar' }
+          ]),
+          groups: Immutable.fromJS([
+            { label: 'foo', id: 'foo' },
+            { label: 'bar', id: 'bar' }
+          ]),
+          renderItem: (item) => item.get('label'),
+          renderGroup: (group) => group.get('label')
+        }))
+
+        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+
+        $el.find('.jungle-select-item').first().simulate('mouseenter')
+        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.true
+        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+      })
     })
 
   })
@@ -714,7 +743,7 @@ describe('JungleSelect', () => {
         expect($el.find('.jungle-select-clear')).to.have.length(0)
       })
 
-      test('add juingle-select-opened class when filtering', () => {
+      test('add jungle-select-opened class when filtering', () => {
         const $el = mount(selectComponent({
           listProps: {
             items: ['foo', 'bar']

@@ -51,7 +51,7 @@
     "id": "immutable",
     "name": "Select with Immutable JS",
     "js": "ImmutableExample",
-    "json": "simpsons"
+    "json": "languages"
   },
   {
     "id": "custom-filter",

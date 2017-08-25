@@ -15,6 +15,14 @@
       "label": "Ruby"
     },
     {
+      "groupId": "frontend",
+      "label": "HTML"
+    },
+    {
+      "groupId": "frontend",
+      "label": "CSS"
+    },
+    {
       "groupId": "backend",
       "label": "Python"
     },
@@ -41,14 +49,6 @@
     {
       "groupId": "frontend",
       "label": "Javascript"
-    },
-    {
-      "groupId": "frontend",
-      "label": "HTML"
-    },
-    {
-      "groupId": "frontend",
-      "label": "CSS"
     },
     {
       "groupId": "frontend",

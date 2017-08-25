@@ -13,14 +13,15 @@ class JungleSelect extends Component {
     center: true,
     showAll: false,
     listOpened: !this.selectMode(),
-    focused: false
+    focused: false,
+    sortedItems: []
   }
 
   constructor(props) {
-    super(props)
     if (props.limit && props.groups) {
       console.warn("[JungleSelect] Cannot use limit with groups.")
     }
+    super(props)
     this.itemElements = []
   }
 
@@ -29,14 +30,41 @@ class JungleSelect extends Component {
   }
 
   componentDidMount() {
-    this.props.autofocus && this.focus()
-    this.props.initialFilter && this.setState({ filter: this.props.initialFilter })
+    const { autofocus, initialFilter, items } = this.props
+    this.computeItems(items)
+    autofocus && this.focus()
+    initialFilter && this.setState({ filter: initialFilter })
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.initialFilter !== nextProps.initialFilter) {
+    const { groups, items, initialFilter } = this.props
+    if (initialFilter !== nextProps.initialFilter) {
       this.setState({ filter: nextProps.initialFilter })
     }
+    if (groups !== nextProps.groups || items !== nextProps.items) {
+      this.computeItems(nextProps.items)
+    }
+  }
+
+  computeItems(items) {
+    const { groups } = this.props
+    let sortedItems
+    if (groups) {
+      if (Immutable.List.isList(items)) {
+        sortedItems = Immutable.List()
+        groups.forEach(group => {
+          sortedItems = sortedItems.concat(items.filter(i => i.get('groupId') === group.get('id')))
+        })
+      } else {
+        sortedItems = []
+        groups.forEach(group => {
+          sortedItems = sortedItems.concat(items.filter(i => i.groupId === group.id))
+        })
+      }
+    } else {
+      sortedItems = items
+    }
+    this.setState({ sortedItems })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -67,9 +95,9 @@ class JungleSelect extends Component {
   }
 
   itemAtIndex(index) {
-    const { items } = this.props
-    let list = this.filteredItems(items)
-    if (Immutable.List.isList(items)) {
+    const { sortedItems } = this.state
+    let list = this.filteredItems(sortedItems)
+    if (Immutable.List.isList(sortedItems)) {
       return list.get(index)
     } else {
       return list[index]
@@ -77,13 +105,13 @@ class JungleSelect extends Component {
   }
 
   indexOfItem(item) {
-    const { items } = this.props
-    return this.filteredItems(items).indexOf(item)
+    const { sortedItems } = this.state
+    return this.filteredItems(sortedItems).indexOf(item)
   }
 
   itemsCount() {
-    const { items } = this.props
-    let list = this.filteredItems(items)
+    const { sortedItems } = this.state
+    let list = this.filteredItems(sortedItems)
     if (Immutable.List.isList(list)) {
       return list.size
     } else {
@@ -217,16 +245,17 @@ class JungleSelect extends Component {
   }
 
   itemsForGroup(group) {
-    const { items } = this.props
-    if (Immutable.List.isList(items)) {
-      return items.filter(item => item.get('groupId') === group.get('id'))
+    const { sortedItems } = this.state
+    if (Immutable.List.isList(sortedItems)) {
+      return sortedItems.filter(item => item.get('groupId') === group.get('id'))
     } else {
-      return items.filter(item => item.groupId === group.id)
+      return sortedItems.filter(item => item.groupId === group.id)
     }
   }
 
   renderList() {
-    const { groups, items, renderGroup, limit } = this.props
+    const { groups, renderGroup, limit } = this.props
+    const { sortedItems } = this.state
     const { showAll } = this.state
     let counter = -1
     if (groups) {
@@ -248,8 +277,8 @@ class JungleSelect extends Component {
         )
       })
     } else {
-      const limited = this.filteredAndLimitedItems(items)
-      const filtered = this.filteredItems(items)
+      const limited = this.filteredAndLimitedItems(sortedItems)
+      const filtered = this.filteredItems(sortedItems)
       const limitedSize = Immutable.List.isList(limited) ? limited.size : limited.length
       const filteredSize = Immutable.List.isList(filtered) ? filtered.size : filtered.length
       if (!limitedSize) { return null }

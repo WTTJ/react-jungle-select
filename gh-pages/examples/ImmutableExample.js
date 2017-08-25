@@ -1,16 +1,21 @@
 import React, { Component } from 'react'
 import Immutable from 'immutable'
 import JungleSelect from '../../src/index'
-import simpsons from '../data/simpsons'
+import languages from '../data/languages'
 require('../../src/JungleSelect.sass')
 
-const immutableSimpsons = Immutable.List(
-  simpsons.map(s => Immutable.Map({name: s}))
+const immutableItems = Immutable.List(
+  languages.items.map(l => Immutable.Map({ name: l.label, groupId: l.groupId }))
+)
+const immutableGroups = Immutable.List(
+  languages.groups.map(g => Immutable.Map({ id: g.id, name: g.label }))
 )
 
-const renderItem = (item) => {
-  return item ? item.get('name') : ''
-}
+const renderItem = (item) =>
+  item ? item.get('name') : ''
+
+const renderGroup = (group, items) =>
+  group ? `${group.get('name')} (${items.size})` : ''
 
 export default class ImmutableExample extends Component {
   state = {
@@ -39,9 +44,11 @@ export default class ImmutableExample extends Component {
         <JungleSelect
           selected={values}
           onChange={::this.select}
-          placeholder='Choose your simpson'
-          items={immutableSimpsons}
+          placeholder='Choose your languages'
+          items={immutableItems}
+          groups={immutableGroups}
           renderItem={renderItem}
+          renderGroup={renderGroup}
           searchable={true}
           searchableAttributes={['name']}
           clearable={true}
