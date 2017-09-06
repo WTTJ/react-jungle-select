@@ -30,8 +30,8 @@ class JungleSelect extends Component {
   }
 
   componentDidMount() {
-    const { autofocus, initialFilter, items } = this.props
-    this.computeItems(items)
+    const { autofocus, initialFilter, items, groups } = this.props
+    this.computeItems(items, groups)
     autofocus && this.focus()
     initialFilter && this.setState({ filter: initialFilter })
   }
@@ -42,12 +42,11 @@ class JungleSelect extends Component {
       this.setState({ filter: nextProps.initialFilter })
     }
     if (groups !== nextProps.groups || items !== nextProps.items) {
-      this.computeItems(nextProps.items)
+      this.computeItems(nextProps.items, nextProps.groups)
     }
   }
 
-  computeItems(items) {
-    const { groups } = this.props
+  computeItems(items, groups) {
     let sortedItems
     if (groups) {
       if (Immutable.List.isList(items)) {

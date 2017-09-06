@@ -75,9 +75,10 @@ var JungleSelect = function (_Component) {
       var _props = this.props,
           autofocus = _props.autofocus,
           initialFilter = _props.initialFilter,
-          items = _props.items;
+          items = _props.items,
+          groups = _props.groups;
 
-      this.computeItems(items);
+      this.computeItems(items, groups);
       autofocus && this.focus();
       initialFilter && this.setState({ filter: initialFilter });
     }
@@ -93,14 +94,12 @@ var JungleSelect = function (_Component) {
         this.setState({ filter: nextProps.initialFilter });
       }
       if (groups !== nextProps.groups || items !== nextProps.items) {
-        this.computeItems(nextProps.items);
+        this.computeItems(nextProps.items, nextProps.groups);
       }
     }
   }, {
     key: 'computeItems',
-    value: function computeItems(items) {
-      var groups = this.props.groups;
-
+    value: function computeItems(items, groups) {
       var sortedItems = void 0;
       if (groups) {
         if (_immutable2.default.List.isList(items)) {
