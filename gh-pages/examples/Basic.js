@@ -17,6 +17,7 @@ export default class Basic extends Component {
           </div>
         }
         <JungleSelect
+          selected={value}
           items={narcos}
           onChange={(value) => this.setState({ value })}
           mode='list'

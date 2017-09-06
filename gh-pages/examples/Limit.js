@@ -27,6 +27,7 @@ export default class Limit extends Component {
               {showAll ? 'Less Simpsons...' : 'More Simpsons...'}
             </a>
           }
+          selected={value}
         />
       </div>
     )

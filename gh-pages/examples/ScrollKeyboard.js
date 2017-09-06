@@ -22,6 +22,7 @@ export default class ScrollKeyboard extends Component{
           searchable={true}
           onChange={(value) => this.setState({ value })}
           mode='list'
+          selected={value}
         />
       </div>
     )

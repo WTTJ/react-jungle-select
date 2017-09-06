@@ -21,6 +21,7 @@ export default class Groups extends Component {
           renderGroup={(group) => group.label}
           renderItem={(item) => item.label}
           onChange={(value) => this.setState({ value })}
+          selected={value}
           mode='list'
         />
       </div>

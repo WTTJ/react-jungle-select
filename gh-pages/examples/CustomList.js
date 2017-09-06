@@ -3,7 +3,7 @@ import JungleSelect from '../../src/index'
 import languages from '../data/languages'
 require('../../src/JungleSelect.sass')
 
-export default class Group extends Component {
+export default class CustomList extends Component {
   state = { value: null }
 
   render() {
@@ -32,6 +32,7 @@ export default class Group extends Component {
           }
           onChange={(value) => this.setState({ value })}
           mode='list'
+          selected={value}
         />
       </div>
     )
