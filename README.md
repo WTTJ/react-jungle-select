@@ -55,6 +55,7 @@ your list.
 | `focus` | `bool` | | `false` | Allows to handle the focus state of the filter input. (`searchable={true}` only) |
 | `autofocus` | `bool` | | `false` | Focus state of the filter input on component mount. Deal with `focus` prop to handle the focus state. (`searchable={true}` only) |
 | `selectFirstItem` | `bool` | | `false` | Automatically highlights the first matching item on search results |
+| `highlightFilterMatches` | `bool` | | `false` | Automatically highlights every wording (in the results) that match with the search string (`searchable={true}` only |
 
 ### Rendering props
 
@@ -76,7 +77,7 @@ your list.
 |:---|:---|:---|:---|:---|
 | `onChange` | `func` | | | Called whenever the user clicks or selects an item with the keyboard. item is passed as an argument |
 | `onFilter` | `func` | | | Called whenever filter occurs. filter is passed as an argument |
-| `filterItem` | `func` | | | Custom method to filter an item. item and filter is passed as an argument. This method shjould return a `bool` |
+| `filterItem` | `func` | | | Custom method to filter an item. item and filter is passed as an argument. This method should return a `bool` |
 
 
 ### DOM default structure
@@ -84,7 +85,11 @@ your list.
 ```html
 <div class="jungle-select jungle-select-opened jungle-select-selected">
   <div class="jungle-select-filter">
-    <input type="text" value="Item" placeholder="Choose an item">
+    <div class="jungle-select-selected-values">
+      <div class="jungle-select-placeholder">Choose an item</div>
+      <div class="jungle-select-selected-value">Selected item</div>
+    </div>
+    <input type="text">
     <div class="jungle-select-clear">×</div>
   </div>
   <div class="jungle-select-list">
@@ -100,19 +105,24 @@ your list.
 
 The parent class is `.jungle-select`.
 
-Others classes are added to this element to indicate the component's status :
+Other classes are added to this element to indicate the component's status :
 
 * `.mode-list`, `.mode-select`: The chosen display mode
-* `.jungle-select-opened`: The list is opened
-* `.jungle-select-selected`: A value has been selected
-* `.jungle-select-focused`: Component has focus
+* `.jungle-select-opened`: the list is opened
+* `.jungle-select-selected`: a value has been selected
+* `.jungle-select-focused`: the component has focus
 
 JungleSelect's controls are wrapped in a `.jungle-select-controls` tag. It contains the following elements :
 
-* `.jungle-select-filter` which wraps the search input, the selected value or the placeholder
+* `.jungle-select-filter` which wraps :
+  * `.jungle-select-values` which is the tag that wraps each selected values (`.jungle-select-selected-value`) or the placeholder (`.jungle-select-placeholder`) if no value has been selected.
+  * the search input
 * `.jungle-select-clear` which is used to clear the selected value and filter
 
 The list container has the `.jungle-select-list` class, groups have the `.jungle-select-group` class and items have the `.jungle-select-item` class.
+
+It can contain the following element if the prop `highlightFilterMatches` is set to true :
+* `.jungle-select-filter-match` which is an `em` tag that wraps every wording matching with the searched word
 
 
 ## Styling
