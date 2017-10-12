@@ -67,7 +67,14 @@ class JungleSelect extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { highlighted, center } = this.state
+    const { highlighted, center, filter } = this.state
+    if (prevState.filter !== filter) {
+      this.itemElements.forEach(e => {
+        if (e) {
+          e.innerHTML = this.highlightFilterMatches(e.textContent)
+        }
+      })
+    }
     if (this.props.focus !== prevProps.focus) {
       const element = this.filterInput ? this.filterInput : ReactDOM.findDOMNode(this.container)
       if (element) {
@@ -332,6 +339,15 @@ class JungleSelect extends Component {
     }
   }
 
+  highlightFilterMatches(text) {
+    if (this.props.highlightFilterMatches && this.state.filter) {
+      let regex = new RegExp(this.state.filter.replace(/ +/g, '|'), 'gi')
+      let subst = `<em class='jungle-select-filter-match'>$&</em>`
+      return text.replace(regex, subst)
+    }
+    return text
+  }
+
   renderItem(item, index) {
     const { renderItem } = this.props
     if (renderItem) {
@@ -571,6 +587,7 @@ JungleSelect.PropTypes = {
   focus: PropTypes.bool,
   autofocus: PropTypes.bool,
   selectFirstItem: PropTypes.bool,
+  highlightFilterMatches: PropTypes.bool,
   initialFilter: PropTypes.string,
 
   classList: PropTypes.arrayOf(

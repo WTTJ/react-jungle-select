@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import Immutable from 'immutable'
-import { expect } from 'chai'
-import { shallow, mount, render } from 'enzyme'
+import chai, { expect } from 'chai'
+chai.use(require('chai-string'))
+import { mount, render } from 'enzyme'
 import TestUtils from 'react-addons-test-utils'
 import JungleSelect from '../src/index'
 
@@ -287,7 +288,7 @@ describe('JungleSelect', () => {
             { label: 'bar2' }
           ]),
           renderItem: (item) => {
-            return item.label
+            return item.get('label')
           },
           searchable: true,
           searchableAttributes: ['label']
@@ -295,6 +296,33 @@ describe('JungleSelect', () => {
         expect($el.find('.jungle-select-item')).to.have.length(4)
         $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo' } })
         expect($el.find('.jungle-select-item')).to.have.length(2)
+      })
+
+      test('wrap wordings that match with the filter with an em.jungle-select-filter-match html tag', () => {
+        const $el = mount(listComponent({
+          items: [
+            { label: 'foo1 Foo' },
+            { label: 'foo2' },
+            { label: 'bar1' },
+            { label: 'bar2' }
+          ],
+          renderItem: (item) => {
+            return <div><div>proute{item.label}</div></div>
+          },
+          searchable: true,
+          searchableAttributes: ['label'],
+          highlightFilterMatches: true
+        }))
+
+        expect($el.find('.jungle-select-item')).to.have.length(4)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+
+        $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo' } })
+        expect($el.find('.jungle-select-item')).to.have.length(2)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 2)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 1)
+
       })
 
       test('allow to exclude items from being filtered', () => {
