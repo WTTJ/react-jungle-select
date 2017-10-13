@@ -321,7 +321,7 @@ describe('JungleSelect', () => {
         expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 0)
         expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 0)
 
-        $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo' } })
+        $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo ' } })
         expect($el.find('.jungle-select-item')).to.have.length(2)
         expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 2)
         expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 1)
