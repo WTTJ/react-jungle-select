@@ -341,7 +341,7 @@ class JungleSelect extends Component {
 
   highlightFilterMatches(text) {
     if (this.props.highlightFilterMatches && this.state.filter) {
-      let regex = new RegExp(this.state.filter.replace(/ +/g, '|'), 'gi')
+      let regex = new RegExp(this.state.filter.trim().replace(/ +/g, '|'), 'gi')
       let subst = `<em class='jungle-select-filter-match'>$&</em>`
       return text.replace(regex, subst)
     }
