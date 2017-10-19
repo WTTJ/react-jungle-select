@@ -67,14 +67,7 @@ class JungleSelect extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { highlighted, center, filter } = this.state
-    if (prevState.filter !== filter) {
-      this.itemElements.forEach(e => {
-        if (e) {
-          e.innerHTML = this.highlightFilterMatches(e.textContent)
-        }
-      })
-    }
+    const { highlighted, center } = this.state
     if (this.props.focus !== prevProps.focus) {
       const element = this.filterInput ? this.filterInput : ReactDOM.findDOMNode(this.container)
       if (element) {
@@ -208,7 +201,7 @@ class JungleSelect extends Component {
   }
 
   filteredItems(items) {
-    const { filterItem, searchableAttributes } = this.props
+    const { filterItem, searchableAttributes, highlightFilterMatches } = this.props
     const { filter } = this.state
     let filtered = items
     if (filter.length) {
@@ -234,6 +227,30 @@ class JungleSelect extends Component {
           }
           return true
         })
+      }
+      if ((filtered.length || filtered.size) && highlightFilterMatches) {
+        this.immutableFilteredMatches = new Immutable.List()
+        this.objectFilteredMatches = []
+        filtered = filtered.map(item => {
+          if (typeof(item) === 'string') {
+            return this.highlightFilterMatches(item)
+          } else if (searchableAttributes) {
+            if (Immutable.Map.isMap(item)) {
+              searchableAttributes.forEach(k => {
+                this.immutableFilteredMatches = this.immutableFilteredMatches.push(item.set(k, this.highlightFilterMatches(item.get(k))))
+              }, this)
+            } else {
+              searchableAttributes.forEach(k => {
+                let itemClone = Object.assign({}, item)
+                itemClone[k] = this.highlightFilterMatches(itemClone[k])
+                this.objectFilteredMatches.push(itemClone)
+              }, this)
+            }
+          }
+          return item
+        }, this)
+        if (this.immutableFilteredMatches.size) return this.immutableFilteredMatches
+        if (this.objectFilteredMatches.length) return this.objectFilteredMatches
       }
     }
     return filtered
@@ -340,12 +357,9 @@ class JungleSelect extends Component {
   }
 
   highlightFilterMatches(text) {
-    if (this.props.highlightFilterMatches && this.state.filter) {
-      let regex = new RegExp(this.state.filter.trim().replace(/ +/g, '|'), 'gi')
-      let subst = `<em class='jungle-select-filter-match'>$&</em>`
-      return text.replace(regex, subst)
-    }
-    return text
+    let regex = new RegExp(this.state.filter.trim().replace(/ +/g, '|'), 'gi')
+    let subst = `<em class='jungle-select-filter-match'>$&</em>`
+    return <span className='jungle-select-highlight-wrapper' dangerouslySetInnerHTML={{__html: text.replace(regex, subst)}} />
   }
 
   renderItem(item, index) {
