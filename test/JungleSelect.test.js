@@ -221,6 +221,89 @@ describe('JungleSelect', () => {
       })
     })
 
+    describe('Highlighting:', () => {
+      test('highlight filter matching wordings from string items', () => {
+        const $el = mount(listComponent({
+          items: [
+            'foo1 Foo',
+            'foo2',
+            'bar1',
+            'bar2'
+          ],
+          searchable: true,
+          highlightFilterMatches: true
+        }))
+
+        expect($el.find('.jungle-select-item')).to.have.length(4)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+
+        $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo ' } })
+        expect($el.find('.jungle-select-item')).to.have.length(2)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 2)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 1)
+
+      })
+
+      test('highlight filter matching wordings from Object items', () => {
+        const $el = mount(listComponent({
+          items: [
+            { label: 'foo1 Foo' },
+            { label: 'foo2' },
+            { label: 'bar1' },
+            { label: 'bar2' }
+          ],
+          renderItem: (item) => {
+            return <div><em className='persist'>Foo</em><div>{item.label}</div></div>
+          },
+          searchable: true,
+          searchableAttributes: ['label'],
+          highlightFilterMatches: true
+        }))
+
+        expect($el.find('.jungle-select-item')).to.have.length(4)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('persist', 1)
+
+        $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo ' } })
+        expect($el.find('.jungle-select-item')).to.have.length(2)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 2)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 1)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('persist', 1)
+
+      })
+
+      test('highlight filter matching wordings from Immutable items', () => {
+        const $el = mount(listComponent({
+          items: Immutable.fromJS([
+            { name: 'foo', label: 'foo1 Foo' },
+            { name: 'foo', label: 'foo2' },
+            { name: 'foo', label: 'bar1' },
+            { name: 'foo', label: 'bar2' }
+          ]),
+          renderItem: (item) => {
+            return <div><em className='persist'>Foo</em><div>{item.get('name')}{item.get('label')}</div></div>
+          },
+          searchable: true,
+          searchableAttributes: ['label'],
+          highlightFilterMatches: true
+        }))
+
+        expect($el.find('.jungle-select-item')).to.have.length(4)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('persist', 1)
+
+        $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo ' } })
+        expect($el.find('.jungle-select-item')).to.have.length(2)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 2)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 1)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('persist', 1)
+
+      })
+    })
+
     describe('Filtering:', () => {
 
       test('add an input for search', () => {
@@ -296,33 +379,6 @@ describe('JungleSelect', () => {
         expect($el.find('.jungle-select-item')).to.have.length(4)
         $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo' } })
         expect($el.find('.jungle-select-item')).to.have.length(2)
-      })
-
-      test('wrap wordings that match with the filter with an em.jungle-select-filter-match html tag', () => {
-        const $el = mount(listComponent({
-          items: [
-            { label: 'foo1 Foo' },
-            { label: 'foo2' },
-            { label: 'bar1' },
-            { label: 'bar2' }
-          ],
-          renderItem: (item) => {
-            return <div><div>proute{item.label}</div></div>
-          },
-          searchable: true,
-          searchableAttributes: ['label'],
-          highlightFilterMatches: true
-        }))
-
-        expect($el.find('.jungle-select-item')).to.have.length(4)
-        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 0)
-        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 0)
-
-        $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo ' } })
-        expect($el.find('.jungle-select-item')).to.have.length(2)
-        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 2)
-        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 1)
-
       })
 
       test('allow to exclude items from being filtered', () => {
