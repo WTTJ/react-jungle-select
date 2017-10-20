@@ -11,8 +11,9 @@ const immutableGroups = Immutable.List(
   languages.groups.map(g => Immutable.Map({ id: g.id, name: g.label }))
 )
 
-const renderItem = (item) =>
-  item ? item.get('name') : ''
+const renderItem = (item, index, highlighted) => {
+  return highlighted ? highlighted.get('name') : ''
+}
 
 const renderGroup = (group, items) =>
   group ? `${group.get('name')} (${items.size})` : ''

@@ -23,6 +23,7 @@ class JungleSelect extends Component {
     }
     super(props)
     this.itemElements = []
+    this.highlights = {}
   }
 
   handleClickOutside() {
@@ -106,6 +107,11 @@ class JungleSelect extends Component {
   indexOfItem(item) {
     const { sortedItems } = this.state
     return this.filteredItems(sortedItems).indexOf(item)
+  }
+
+  originalItemIndex(item) {
+    const { items } = this.props
+    return items.indexOf(item)
   }
 
   itemsCount() {
@@ -201,56 +207,42 @@ class JungleSelect extends Component {
   }
 
   filteredItems(items) {
-    const { filterItem, searchableAttributes, highlightFilterMatches } = this.props
+    const { filterItem, searchableAttributes } = this.props
     const { filter } = this.state
     let filtered = items
+    this.highlights = Immutable.fromJS(items)
     if (filter.length) {
       if (filterItem) {
         filtered = items.filter(item => filterItem(item, filter))
       } else {
         let search = sanitizeSearchString(filter)
-        filtered = items.filter(item => {
+        filtered = items.filter((item, index) => {
           if (typeof(item) === 'string') {
+            this.highlights = this.highlights.set(index, this.highlightFilterMatches(item))
             return sanitizeSearchString(item).indexOf(search) !== -1
           } else if (searchableAttributes) {
             if (Immutable.Map.isMap(item)) {
               if (item.get('filterable') === false) { return true }
-              return searchableAttributes.some(k =>
-                sanitizeSearchString(item.get(k)).indexOf(search) !== -1
-              )
+              let matches = item
+              let match = searchableAttributes.some(k => {
+                matches = matches.set(k, this.highlightFilterMatches(item.get(k)))
+                return sanitizeSearchString(item.get(k)).indexOf(search) !== -1
+              })
+              this.highlights = this.highlights.set(index, matches)
+              return match
             } else {
               if (item.filterable === false) { return true }
-              return searchableAttributes.some(k =>
-                sanitizeSearchString(item[k]).indexOf(search) !== -1
-              )
+              let matches = item
+              let match = searchableAttributes.some(k => {
+                matches = matches[k] = this.highlightFilterMatches(item[k])
+                return sanitizeSearchString(item[k]).indexOf(search) !== -1
+              })
+              this.highlights = this.highlights.set(index, matches)
+              return match
             }
           }
           return true
         })
-      }
-      if ((filtered.length || filtered.size) && highlightFilterMatches) {
-        this.immutableFilteredMatches = new Immutable.List()
-        this.objectFilteredMatches = []
-        filtered = filtered.map(item => {
-          if (typeof(item) === 'string') {
-            return this.highlightFilterMatches(item)
-          } else if (searchableAttributes) {
-            if (Immutable.Map.isMap(item)) {
-              searchableAttributes.forEach(k => {
-                this.immutableFilteredMatches = this.immutableFilteredMatches.push(item.set(k, this.highlightFilterMatches(item.get(k))))
-              }, this)
-            } else {
-              searchableAttributes.forEach(k => {
-                let itemClone = Object.assign({}, item)
-                itemClone[k] = this.highlightFilterMatches(itemClone[k])
-                this.objectFilteredMatches.push(itemClone)
-              }, this)
-            }
-          }
-          return item
-        }, this)
-        if (this.immutableFilteredMatches.size) return this.immutableFilteredMatches
-        if (this.objectFilteredMatches.length) return this.objectFilteredMatches
       }
     }
     return filtered
@@ -364,8 +356,11 @@ class JungleSelect extends Component {
 
   renderItem(item, index) {
     const { renderItem } = this.props
+    if (this.props.highlightFilterMatches) {
+      console.log('RENDER', this.highlights)
+    }
     if (renderItem) {
-      return renderItem(item, index)
+      return renderItem(item, index, this.highlights.get(this.originalItemIndex(item)))
     } else {
       return item
     }

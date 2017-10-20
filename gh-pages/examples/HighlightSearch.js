@@ -23,6 +23,9 @@ export default class HighlightSearch extends Component {
           searchable={true}
           placeholder='Choose your narco'
           highlightFilterMatches={true}
+          renderItem={(item, index, highlighted) => {
+            return highlighted
+          }}
         />
       </div>
     )
