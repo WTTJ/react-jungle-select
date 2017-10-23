@@ -323,6 +323,13 @@ a {
       border-color: #00C29A; }
       .jungle-select .jungle-select-item.selected:hover, .jungle-select .jungle-select-item.selected.hover {
         background-color: #F5FCFA; }
+  .jungle-select .jungle-select-filter-match {
+    color: white;
+    font-style: normal;
+    background-color: #3dd095;
+    border-right: 3px solid #3dd095;
+    border-left: 3px solid #3dd095;
+    border-radius: 2px; }
   .jungle-select .jungle-select-show-all {
     padding: 10px 15px;
     display: block;

@@ -23,7 +23,7 @@ class JungleSelect extends Component {
     }
     super(props)
     this.itemElements = []
-    this.highlights = {}
+    this.highlights = []
   }
 
   handleClickOutside() {
@@ -110,8 +110,24 @@ class JungleSelect extends Component {
   }
 
   originalItemIndex(item) {
-    const { items } = this.props
-    return items.indexOf(item)
+    const { sortedItems } = this.state
+    if (this.props.groups) {
+      return this.itemsForGroup(this.groupFromItem(item)).indexOf(item)
+    }
+    return sortedItems.indexOf(item)
+  }
+
+  groupFromItem(item) {
+    const { groups } = this.props
+    let groupId = Immutable.Map.isMap(item) ? item.get('groupId') : item.groupId
+    return groups.find(group => {
+      if (Immutable.Map.isMap(group)) {
+        return group.get('id') === groupId
+      } else {
+        return group.id === groupId
+      }
+
+    })
   }
 
   itemsCount() {
@@ -195,6 +211,19 @@ class JungleSelect extends Component {
     if (onEscape) { onEscape(filter) }
   }
 
+  searchableAttributes(item) {
+    const { searchableAttributes } = this.props
+    if (!searchableAttributes) {
+      if (Immutable.Map.isMap(item)) {
+        return item.keySeq().toArray()
+      } else if (typeof(item) === 'object') {
+        return Object.keys(item)
+      }
+      return []
+    }
+    return searchableAttributes
+  }
+
   filter(e) {
     const { onFilter, selectFirstItem } = this.props
     let filter = e.target ? e.target.value : e
@@ -206,42 +235,73 @@ class JungleSelect extends Component {
     })
   }
 
+  filterMethod(string) {
+    const { filteringMode } = this.props
+    const { filter } = this.state
+    let search = sanitizeSearchString(filter)
+    switch(filteringMode) {
+      case 'any':
+        return search.split(' ').some(s =>
+          sanitizeSearchString(string).indexOf(s) !== -1
+        )
+      case 'every':
+        return search.split(' ').every(s =>
+          sanitizeSearchString(string).indexOf(s) !== -1
+        )
+      default:
+        return sanitizeSearchString(string).indexOf(search) !== -1
+    }
+  }
+
   filteredItems(items) {
-    const { filterItem, searchableAttributes } = this.props
+    const { filterItem } = this.props
     const { filter } = this.state
     let filtered = items
-    this.highlights = Immutable.fromJS(items)
+    this.highlights = Immutable.List(items.map(i => {
+      if (typeof(i) === 'object' && !Immutable.Map.isMap(i)) {
+        return Immutable.Map(i)
+      }
+      return i
+    }))
     if (filter.length) {
       if (filterItem) {
-        filtered = items.filter(item => filterItem(item, filter))
+        filtered = items.filter((item, index) => filterItem(item, filter))
       } else {
-        let search = sanitizeSearchString(filter)
         filtered = items.filter((item, index) => {
           if (typeof(item) === 'string') {
-            this.highlights = this.highlights.set(index, this.highlightFilterMatches(item))
-            return sanitizeSearchString(item).indexOf(search) !== -1
-          } else if (searchableAttributes) {
+            let match = this.filterMethod(item)
+            if (match) {
+              this.highlights = this.highlights.set(index, this.highlightFilterMatches(item))
+            }
+            return match
+          } else {
+            let searchableAttributes = this.searchableAttributes(item)
             if (Immutable.Map.isMap(item)) {
               if (item.get('filterable') === false) { return true }
               let matches = item
-              let match = searchableAttributes.some(k => {
-                matches = matches.set(k, this.highlightFilterMatches(item.get(k)))
-                return sanitizeSearchString(item.get(k)).indexOf(search) !== -1
-              })
-              this.highlights = this.highlights.set(index, matches)
-              return match
+              let matching = searchableAttributes.map(k => {
+                let match = this.filterMethod(item.get(k))
+                if (match) {
+                  matches = matches.set(k, this.highlightFilterMatches(item.get(k)))
+                  this.highlights = this.highlights.set(index, matches)
+                }
+                return match
+              }).some(b => b)
+              return matching
             } else {
               if (item.filterable === false) { return true }
-              let matches = item
-              let match = searchableAttributes.some(k => {
-                matches = matches[k] = this.highlightFilterMatches(item[k])
-                return sanitizeSearchString(item[k]).indexOf(search) !== -1
-              })
-              this.highlights = this.highlights.set(index, matches)
-              return match
+              let matches = Immutable.fromJS(item)
+              let matching = searchableAttributes.map(k => {
+                let match = this.filterMethod(item[k])
+                if (match) {
+                  matches = matches.set(k, this.highlightFilterMatches(item[k]))
+                  this.highlights = this.highlights.set(index, matches)
+                }
+                return match
+              }).some(b => b)
+              return matching
             }
           }
-          return true
         })
       }
     }
@@ -349,18 +409,22 @@ class JungleSelect extends Component {
   }
 
   highlightFilterMatches(text) {
-    let regex = new RegExp(this.state.filter.trim().replace(/ +/g, '|'), 'gi')
+    const { filter } = this.state
+    let regexedFilter = filter.trim().replace(/[^\w\s]/g, '\\$&').replace(/[\s]+/g, '|')
+    if (regexedFilter === '') return text
+    let regex = new RegExp( regexedFilter, 'gi')
     let subst = `<em class='jungle-select-filter-match'>$&</em>`
-    return <span className='jungle-select-highlight-wrapper' dangerouslySetInnerHTML={{__html: text.replace(regex, subst)}} />
+    return <span dangerouslySetInnerHTML={{__html: text.replace(regex, subst)}} />
   }
 
   renderItem(item, index) {
     const { renderItem } = this.props
-    if (this.props.highlightFilterMatches) {
-      console.log('RENDER', this.highlights)
-    }
     if (renderItem) {
-      return renderItem(item, index, this.highlights.get(this.originalItemIndex(item)))
+      let highlightedItem = this.highlights.get(this.originalItemIndex(item))
+      if (typeof(item) === 'object' && !Immutable.Map.isMap(item)) {
+        highlightedItem = highlightedItem.toJS()
+      }
+      return renderItem(item, index, highlightedItem)
     } else {
       return item
     }
@@ -425,7 +489,7 @@ class JungleSelect extends Component {
         key={i}
         title={item}
       >
-        {renderFunction && renderFunction(item, i)}
+        {renderFunction && renderFunction(item, i, item)}
         {!renderFunction && item }
       </div>
     )
@@ -588,6 +652,7 @@ JungleSelect.PropTypes = {
       ])
     )
   ]),
+  filteringMode: PropTypes.string,
   searchable: PropTypes.bool,
   limit: PropTypes.number,
   searchableAttributes: PropTypes.arrayOf(
@@ -596,7 +661,6 @@ JungleSelect.PropTypes = {
   focus: PropTypes.bool,
   autofocus: PropTypes.bool,
   selectFirstItem: PropTypes.bool,
-  highlightFilterMatches: PropTypes.bool,
   initialFilter: PropTypes.string,
 
   classList: PropTypes.arrayOf(
@@ -625,7 +689,11 @@ JungleSelect.defaultProps = {
   selected: []
 }
 
-const sanitizeSearchString = (string) =>
-  removeDiacritics(string.toLowerCase().replace(/ +(?= )/g,'').trim())
+const sanitizeSearchString = (string) => {
+  if (typeof(string) !== 'string') {
+    return ''
+  }
+  return removeDiacritics(string.toLowerCase().replace(/ +(?= )/g,'').trim())
+}
 
 export default onClickOutside(JungleSelect)

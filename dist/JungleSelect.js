@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -61,6 +63,7 @@ var JungleSelect = function (_Component) {
     };
 
     _this.itemElements = [];
+    _this.highlights = [];
     return _this;
   }
 
@@ -173,6 +176,30 @@ var JungleSelect = function (_Component) {
       return this.filteredItems(sortedItems).indexOf(item);
     }
   }, {
+    key: 'originalItemIndex',
+    value: function originalItemIndex(item) {
+      var sortedItems = this.state.sortedItems;
+
+      if (this.props.groups) {
+        return this.itemsForGroup(this.groupFromItem(item)).indexOf(item);
+      }
+      return sortedItems.indexOf(item);
+    }
+  }, {
+    key: 'groupFromItem',
+    value: function groupFromItem(item) {
+      var groups = this.props.groups;
+
+      var groupId = _immutable2.default.Map.isMap(item) ? item.get('groupId') : item.groupId;
+      return groups.find(function (group) {
+        if (_immutable2.default.Map.isMap(group)) {
+          return group.get('id') === groupId;
+        } else {
+          return group.id === groupId;
+        }
+      });
+    }
+  }, {
     key: 'itemsCount',
     value: function itemsCount() {
       var sortedItems = this.state.sortedItems;
@@ -272,6 +299,21 @@ var JungleSelect = function (_Component) {
       }
     }
   }, {
+    key: 'searchableAttributes',
+    value: function searchableAttributes(item) {
+      var searchableAttributes = this.props.searchableAttributes;
+
+      if (!searchableAttributes) {
+        if (_immutable2.default.Map.isMap(item)) {
+          return item.keySeq().toArray();
+        } else if ((typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object') {
+          return Object.keys(item);
+        }
+        return [];
+      }
+      return searchableAttributes;
+    }
+  }, {
     key: 'filter',
     value: function filter(e) {
       var _props4 = this.props,
@@ -289,42 +331,89 @@ var JungleSelect = function (_Component) {
       });
     }
   }, {
+    key: 'filterMethod',
+    value: function filterMethod(string) {
+      var filteringMode = this.props.filteringMode;
+      var filter = this.state.filter;
+
+      var search = sanitizeSearchString(filter);
+      switch (filteringMode) {
+        case 'any':
+          return search.split(' ').some(function (s) {
+            return sanitizeSearchString(string).indexOf(s) !== -1;
+          });
+        case 'every':
+          return search.split(' ').every(function (s) {
+            return sanitizeSearchString(string).indexOf(s) !== -1;
+          });
+        default:
+          return sanitizeSearchString(string).indexOf(search) !== -1;
+      }
+    }
+  }, {
     key: 'filteredItems',
     value: function filteredItems(items) {
-      var _props5 = this.props,
-          filterItem = _props5.filterItem,
-          searchableAttributes = _props5.searchableAttributes;
+      var _this2 = this;
+
+      var filterItem = this.props.filterItem;
       var filter = this.state.filter;
 
       var filtered = items;
+      this.highlights = _immutable2.default.List(items.map(function (i) {
+        if ((typeof i === 'undefined' ? 'undefined' : _typeof(i)) === 'object' && !_immutable2.default.Map.isMap(i)) {
+          return _immutable2.default.Map(i);
+        }
+        return i;
+      }));
       if (filter.length) {
         if (filterItem) {
-          filtered = items.filter(function (item) {
+          filtered = items.filter(function (item, index) {
             return filterItem(item, filter);
           });
         } else {
-          var search = sanitizeSearchString(filter);
-          filtered = items.filter(function (item) {
+          filtered = items.filter(function (item, index) {
             if (typeof item === 'string') {
-              return sanitizeSearchString(item).indexOf(search) !== -1;
-            } else if (searchableAttributes) {
+              var match = _this2.filterMethod(item);
+              if (match) {
+                _this2.highlights = _this2.highlights.set(index, _this2.highlightFilterMatches(item));
+              }
+              return match;
+            } else {
+              var searchableAttributes = _this2.searchableAttributes(item);
               if (_immutable2.default.Map.isMap(item)) {
                 if (item.get('filterable') === false) {
                   return true;
                 }
-                return searchableAttributes.some(function (k) {
-                  return sanitizeSearchString(item.get(k)).indexOf(search) !== -1;
+                var matches = item;
+                var matching = searchableAttributes.map(function (k) {
+                  var match = _this2.filterMethod(item.get(k));
+                  if (match) {
+                    matches = matches.set(k, _this2.highlightFilterMatches(item.get(k)));
+                    _this2.highlights = _this2.highlights.set(index, matches);
+                  }
+                  return match;
+                }).some(function (b) {
+                  return b;
                 });
+                return matching;
               } else {
                 if (item.filterable === false) {
                   return true;
                 }
-                return searchableAttributes.some(function (k) {
-                  return sanitizeSearchString(item[k]).indexOf(search) !== -1;
+                var _matches = _immutable2.default.fromJS(item);
+                var _matching = searchableAttributes.map(function (k) {
+                  var match = _this2.filterMethod(item[k]);
+                  if (match) {
+                    _matches = _matches.set(k, _this2.highlightFilterMatches(item[k]));
+                    _this2.highlights = _this2.highlights.set(index, _matches);
+                  }
+                  return match;
+                }).some(function (b) {
+                  return b;
                 });
+                return _matching;
               }
             }
-            return true;
           });
         }
       }
@@ -361,19 +450,19 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderList',
     value: function renderList() {
-      var _this2 = this;
+      var _this3 = this;
 
-      var _props6 = this.props,
-          groups = _props6.groups,
-          renderGroup = _props6.renderGroup,
-          limit = _props6.limit;
+      var _props5 = this.props,
+          groups = _props5.groups,
+          renderGroup = _props5.renderGroup,
+          limit = _props5.limit;
       var sortedItems = this.state.sortedItems;
       var showAll = this.state.showAll;
 
       var counter = -1;
       if (groups) {
         return groups.map(function (group, groupIndex) {
-          var groupItems = _this2.filteredItems(_this2.itemsForGroup(group));
+          var groupItems = _this3.filteredItems(_this3.itemsForGroup(group));
           return _react2.default.createElement(
             'section',
             {
@@ -390,7 +479,7 @@ var JungleSelect = function (_Component) {
               null,
               groupItems.map(function (item, itemIndex) {
                 counter = counter + 1;
-                return _this2.renderInternalItem(item, counter);
+                return _this3.renderInternalItem(item, counter);
               })
             )
           );
@@ -408,7 +497,7 @@ var JungleSelect = function (_Component) {
           null,
           limited.map(function (item, itemIndex) {
             counter = counter + 1;
-            return _this2.renderInternalItem(item, counter);
+            return _this3.renderInternalItem(item, counter);
           }),
           (limitedSize < filteredSize || showAll && limitedSize > limit) && this.renderShowAll(showAll, this.toggleShowAll.bind(this))
         );
@@ -417,7 +506,7 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderInternalItem',
     value: function renderInternalItem(item, index) {
-      var _this3 = this;
+      var _this4 = this;
 
       var selected = this.selectedItems();
       var highlighted = this.state.highlighted;
@@ -431,7 +520,7 @@ var JungleSelect = function (_Component) {
           onClick: this.onChange.bind(this, item),
           key: index,
           ref: function ref(e) {
-            return _this3.itemElements[index] = e;
+            return _this4.itemElements[index] = e;
           },
           className: classNames.join(' '),
           onMouseEnter: this.highlightItem.bind(this, item, false),
@@ -461,12 +550,27 @@ var JungleSelect = function (_Component) {
       }
     }
   }, {
+    key: 'highlightFilterMatches',
+    value: function highlightFilterMatches(text) {
+      var filter = this.state.filter;
+
+      var regexedFilter = filter.trim().replace(/[^\w\s]/g, '\\$&').replace(/[\s]+/g, '|');
+      if (regexedFilter === '') return text;
+      var regex = new RegExp(regexedFilter, 'gi');
+      var subst = '<em class=\'jungle-select-filter-match\'>$&</em>';
+      return _react2.default.createElement('span', { dangerouslySetInnerHTML: { __html: text.replace(regex, subst) } });
+    }
+  }, {
     key: 'renderItem',
     value: function renderItem(item, index) {
       var renderItem = this.props.renderItem;
 
       if (renderItem) {
-        return renderItem(item, index);
+        var highlightedItem = this.highlights.get(this.originalItemIndex(item));
+        if ((typeof item === 'undefined' ? 'undefined' : _typeof(item)) === 'object' && !_immutable2.default.Map.isMap(item)) {
+          highlightedItem = highlightedItem.toJS();
+        }
+        return renderItem(item, index, highlightedItem);
       } else {
         return item;
       }
@@ -543,9 +647,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderSelectedItems',
     value: function renderSelectedItems(items) {
-      var _props7 = this.props,
-          renderSelectedItem = _props7.renderSelectedItem,
-          renderItem = _props7.renderItem;
+      var _props6 = this.props,
+          renderSelectedItem = _props6.renderSelectedItem,
+          renderItem = _props6.renderItem;
 
       var renderFunction = renderSelectedItem || renderItem;
       return items.map(function (item, i) {
@@ -556,7 +660,7 @@ var JungleSelect = function (_Component) {
             key: i,
             title: item
           },
-          renderFunction && renderFunction(item, i),
+          renderFunction && renderFunction(item, i, item),
           !renderFunction && item
         );
       });
@@ -617,7 +721,7 @@ var JungleSelect = function (_Component) {
     key: 'render',
     value: function render() {
       var _context,
-          _this4 = this;
+          _this5 = this;
 
       var keyMap = {
         'up': 'up',
@@ -631,12 +735,12 @@ var JungleSelect = function (_Component) {
         'enter': this.selectHighlightedItem.bind(this),
         'esc': this.onClear.bind(this)
       };
-      var _props8 = this.props,
-          searchable = _props8.searchable,
-          listWrapper = _props8.listWrapper,
-          classList = _props8.classList,
-          clearable = _props8.clearable,
-          mode = _props8.mode;
+      var _props7 = this.props,
+          searchable = _props7.searchable,
+          listWrapper = _props7.listWrapper,
+          classList = _props7.classList,
+          clearable = _props7.clearable,
+          mode = _props7.mode;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
@@ -657,7 +761,7 @@ var JungleSelect = function (_Component) {
         _reactHotkeys.HotKeys,
         {
           ref: function ref(e) {
-            return _this4.container = e;
+            return _this5.container = e;
           },
           keyMap: keyMap,
           handlers: handlers,
@@ -686,7 +790,7 @@ var JungleSelect = function (_Component) {
                 this.displayPlaceholderOrValue(),
                 searchable && _react2.default.createElement('input', {
                   ref: function ref(e) {
-                    return _this4.filterInput = e;
+                    return _this5.filterInput = e;
                   },
                   value: filter,
                   onChange: this.filter.bind(this),
@@ -710,7 +814,7 @@ var JungleSelect = function (_Component) {
             {
               className: 'jungle-select-list',
               ref: function ref(e) {
-                return _this4.itemsContainer = e;
+                return _this5.itemsContainer = e;
               }
             },
             listWrapper && listWrapper(this.renderList()),
@@ -729,6 +833,7 @@ JungleSelect.PropTypes = {
   items: _propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object])).isRequired,
   groups: _propTypes2.default.arrayOf(_propTypes2.default.object),
   selected: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object, _propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object]))]),
+  filteringMode: _propTypes2.default.string,
   searchable: _propTypes2.default.bool,
   limit: _propTypes2.default.number,
   searchableAttributes: _propTypes2.default.arrayOf(_propTypes2.default.string),
@@ -762,6 +867,9 @@ JungleSelect.defaultProps = {
 };
 
 var sanitizeSearchString = function sanitizeSearchString(string) {
+  if (typeof string !== 'string') {
+    return '';
+  }
   return (0, _diacritics.remove)(string.toLowerCase().replace(/ +(?= )/g, '').trim());
 };
 

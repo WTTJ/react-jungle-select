@@ -22,10 +22,7 @@ export default class HighlightSearch extends Component {
           mode='select'
           searchable={true}
           placeholder='Choose your narco'
-          highlightFilterMatches={true}
-          renderItem={(item, index, highlighted) => {
-            return highlighted
-          }}
+          renderItem={(item, index, highlighted) => highlighted }
         />
       </div>
     )
