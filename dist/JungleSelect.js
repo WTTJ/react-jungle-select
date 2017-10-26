@@ -435,7 +435,7 @@ var JungleSelect = function (_Component) {
           },
           className: classNames.join(' '),
           onMouseEnter: this.highlightItem.bind(this, item, false),
-          onMouseLeave: highlighted === index && this.highlightItem.bind(this, null, false)
+          onMouseLeave: highlighted === index ? this.highlightItem.bind(this, null, false) : null
         },
         this.renderItem(item, index)
       );

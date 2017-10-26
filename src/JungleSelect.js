@@ -308,7 +308,7 @@ class JungleSelect extends Component {
         ref={(e) => this.itemElements[index] = e }
         className={classNames.join(' ')}
         onMouseEnter={this.highlightItem.bind(this, item, false)}
-        onMouseLeave={highlighted === index && this.highlightItem.bind(this, null, false)}
+        onMouseLeave={highlighted === index ? this.highlightItem.bind(this, null, false) : null}
       >
         {this.renderItem(item, index)}
       </div>
