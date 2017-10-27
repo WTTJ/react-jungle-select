@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import Immutable from 'immutable'
 import { expect } from 'chai'
-import { shallow, mount, render } from 'enzyme'
-import TestUtils from 'react-addons-test-utils'
+import Enzyme, { shallow, mount, render } from 'enzyme'
+import Adapter from 'enzyme-adapter-react-16'
+import TestUtils from 'react-dom/test-utils'
 import JungleSelect from '../src/index'
+
+Enzyme.configure({ adapter: new Adapter() })
 
 const listComponent = (overrides) => {
   const props = Object.assign(
@@ -152,7 +155,7 @@ describe('JungleSelect', () => {
           items: ['foo', 'bar'],
           classList: ['foobar']
         }))
-        expect($el.find('.jungle-select.foobar')).to.have.length(1)
+        expect($el.find(JungleSelect).props().classList).to.includes('foobar')
       })
 
     })
@@ -417,6 +420,7 @@ describe('JungleSelect', () => {
         $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo' } })
         expect($el.find('.jungle-select-filter input').props().value).to.eq('foo')
         $el.instance().getInstance().onClear(new Event('keydown'))
+        $el.update()
         expect($el.find('.jungle-select-filter input').props().value).to.eq('')
       })
 
@@ -427,44 +431,57 @@ describe('JungleSelect', () => {
             'foo2',
             'bar1',
             'bar2'
-          ]
+          ],
+          searchable: true
         }))
         expect($el.find('.jungle-select-item.hover')).to.have.length(0)
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.true
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        $el.update()
+        expect($el.find('.jungle-select-filter input').props().value).to.eq('')
+        expect($el.find('.jungle-select-item').get(0).props.className).to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.true
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        $el.update()
+        expect($el.find('.jungle-select-filter input').props().value).to.eq('')
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.true
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        $el.update()
+        expect($el.find('.jungle-select-filter input').props().value).to.eq('')
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.true
+        $el.update()
+        expect($el.find('.jungle-select-filter input').props().value).to.eq('')
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).to.contains('hover')
 
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.true
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        $el.update()
+        expect($el.find('.jungle-select-filter input').props().value).to.eq('')
+        expect($el.find('.jungle-select-item').get(0).props.className).to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.instance().getInstance().highlightItemFromKeyboard('prev', new Event('keydown'))
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.true
+        $el.update()
+        expect($el.find('.jungle-select-filter input').props().value).to.eq('')
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).to.contains('hover')
       })
 
       test('trigger click on selected item when hit enter', () => {
@@ -481,18 +498,21 @@ describe('JungleSelect', () => {
 
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.true
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        $el.update()
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.instance().getInstance().selectHighlightedItem(new Event('keydown'))
+        $el.update()
 
         expect(onChangeMock.mock.calls.length).to.eq(1)
         expect(onChangeMock.mock.calls[0][0]).to.eq('foo2')
 
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
         $el.instance().getInstance().selectHighlightedItem(new Event('keydown'))
+        $el.update()
 
         expect(onChangeMock.mock.calls.length).to.eq(2)
         expect(onChangeMock.mock.calls[1][0]).to.eq('bar1')
@@ -515,18 +535,21 @@ describe('JungleSelect', () => {
 
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.true
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        $el.update()
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.instance().getInstance().selectHighlightedItem(new Event('keydown'))
+        $el.update()
 
         expect(onChangeMock.mock.calls.length).to.eq(1)
         expect(onChangeMock.mock.calls[0][0].toJS()).to.deep.eq({ label: 'foo2' })
 
         $el.instance().getInstance().highlightItemFromKeyboard('next', new Event('keydown'))
         $el.instance().getInstance().selectHighlightedItem(new Event('keydown'))
+        $el.update()
 
         expect(onChangeMock.mock.calls.length).to.eq(2)
         expect(onChangeMock.mock.calls[1][0].toJS()).to.deep.eq({ label: 'bar1' })
@@ -545,28 +568,28 @@ describe('JungleSelect', () => {
           ]
         }))
 
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.find('.jungle-select-item').last().simulate('mouseenter')
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.true
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).to.contains('hover')
 
         $el.find('.jungle-select-item').first().simulate('mouseenter')
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.true
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(0).props.className).to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.find('.jungle-select-item').first().simulate('mouseleave')
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
       })
 
       test('toggle hover on immutable groups/items when MouseEnter/Leave', () => {
@@ -586,16 +609,16 @@ describe('JungleSelect', () => {
           renderGroup: (group) => group.get('label')
         }))
 
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(0).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
 
         $el.find('.jungle-select-item').first().simulate('mouseenter')
-        expect($el.find('.jungle-select-item').get(0).classList.contains('hover')).to.be.true
-        expect($el.find('.jungle-select-item').get(1).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(2).classList.contains('hover')).to.be.false
-        expect($el.find('.jungle-select-item').get(3).classList.contains('hover')).to.be.false
+        expect($el.find('.jungle-select-item').get(0).props.className).to.contains('hover')
+        expect($el.find('.jungle-select-item').get(1).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(2).props.className).not.to.contains('hover')
+        expect($el.find('.jungle-select-item').get(3).props.className).not.to.contains('hover')
       })
     })
 
@@ -619,12 +642,14 @@ describe('JungleSelect', () => {
         const $el = mount(selectComponent({
           items: ['foo', 'bar']
         }))
-        expect($el.find('.jungle-select-filter')).to.have.length(1)
-        expect($el.find('.jungle-select.jungle-select-opened')).to.have.length(0)
+        expect($el.find('.jungle-select-filter').exists()).to.be.true
+        expect($el.find('.jungle-select').get(0).props.className).not.to.includes('jungle-select-opened')
         $el.find('.jungle-select-filter').first().simulate('click')
-        expect($el.find('.jungle-select.jungle-select-opened')).to.have.length(1)
+        $el.update()
+        expect($el.find('.jungle-select').get(0).props.className).to.includes('jungle-select-opened')
         $el.find('.jungle-select-filter').first().simulate('click')
-        expect($el.find('.jungle-select.jungle-select-opened')).to.have.length(0)
+        $el.update()
+        expect($el.find('.jungle-select').get(0).props.className).not.to.includes('jungle-select-opened')
       })
 
       test('select item on click', () => {
@@ -665,8 +690,8 @@ describe('JungleSelect', () => {
         }))
         expect($el.find('.jungle-select-selected-value')).to.have.length(3)
         expect($el.find('.jungle-select-selected-value').first().text()).to.eq('foo')
-        expect($el.find('.jungle-select-selected-value').get(1).textContent).to.eq('bar')
-        expect($el.find('.jungle-select-selected-value').last().text()).to.eq('baz')
+        expect($el.find('.jungle-select-selected-value').get(1).props.children).to.includes('bar')
+        expect($el.find('.jungle-select-selected-value').last().props().children).to.includes('baz')
       })
 
       test('select item on click', () => {
@@ -750,9 +775,10 @@ describe('JungleSelect', () => {
           },
           searchable: true
         }))
-        expect($el.find('.jungle-select.jungle-select-opened')).to.have.length(0)
+        expect($el.find('.jungle-select.jungle-select-opened').exists()).to.be.false
         $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo' } })
-        expect($el.find('.jungle-select.jungle-select-opened')).to.have.length(1)
+        $el.update()
+        expect($el.find('.jungle-select.jungle-select-opened').exists()).to.be.true
       })
 
     })

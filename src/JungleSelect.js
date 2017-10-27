@@ -494,8 +494,8 @@ class JungleSelect extends Component {
                   className='jungle-select-filter'
                   onClick={::this.toggleList}
                   tabIndex={!searchable ? 0 : -1}
-                  onFocus={!searchable && ::this.onFocusFilter}
-                  onBlur={!searchable && ::this.onBlurFilter}
+                  onFocus={!searchable ? ::this.onFocusFilter : null}
+                  onBlur={!searchable ? ::this.onBlurFilter : null}
                 >
                   {this.displayPlaceholderOrValue()}
                   {searchable &&
