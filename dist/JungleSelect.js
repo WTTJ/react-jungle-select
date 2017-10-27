@@ -680,8 +680,8 @@ var JungleSelect = function (_Component) {
                   className: 'jungle-select-filter',
                   onClick: this.toggleList.bind(this),
                   tabIndex: !searchable ? 0 : -1,
-                  onFocus: !searchable && this.onFocusFilter.bind(this),
-                  onBlur: !searchable && this.onBlurFilter.bind(this)
+                  onFocus: !searchable ? this.onFocusFilter.bind(this) : null,
+                  onBlur: !searchable ? this.onBlurFilter.bind(this) : null
                 },
                 this.displayPlaceholderOrValue(),
                 searchable && _react2.default.createElement('input', {
