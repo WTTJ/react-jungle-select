@@ -75,6 +75,13 @@
     "description": "Select at least 2 items in order to see the behavior."
   },
   {
+    "id": "highlight-search",
+    "name": "Highlight Search",
+    "js": "HighlightSearch",
+    "json": "narcos",
+    "description": "Once your select/list is 'searchable', you can also highlight the matches."
+  },
+  {
     "id": "redux-form",
     "name": "Redux Form",
     "js": "ReduxForm",

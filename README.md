@@ -48,11 +48,12 @@ your list.
 | `items` | `array[string⎮object]` | ✓ | | The items of your list. Can be an array of strings or objects |
 | `groups` | `array[object]` | | | Group your items |
 | `selected` | `string⎮object⎮object` | In `select` mode | | The selected item(s) |
+| `filteringMode` | `string` | | `exact` | filteringMode will allow you to filter results according to the mode you choose ('exact' \| 'every' \| 'any'). 'exact' will return items that match exactly your search string, 'every' will return items that match each word of your search string no matter their order and 'any' will return items that match at least one of the words of your search string (`searchable={true}` only)|
 | `searchable` | `bool` | | `false` | Display a filter input or not|
 | `searchableAttributes` | `array[string]` | | | Limit your search filter to defined keys if your items are objects |
 | `initialFilter` | `string` | | | Initial filter to apply (`searchable={true}` only) |
 | `limit` | `number` | | | Limit the number of results of your list to the chosen number (not supported for groups) |
-| `focus` | `bool` | | `false` | Allows to handle the focus state of the filter input. (`searchable={true}` only) |
+| `focus` | `bool` | | `false` | Allows to handle the focus state of the filter input (`searchable={true}` only) |
 | `autofocus` | `bool` | | `false` | Focus state of the filter input on component mount. Deal with `focus` prop to handle the focus state. (`searchable={true}` only) |
 | `selectFirstItem` | `bool` | | `false` | Automatically highlights the first matching item on search results |
 
@@ -62,7 +63,7 @@ your list.
 |:---|:---|:---|:---|:---|
 | `classList` | `array[string]` | | | Adds custom classes to the main tag |
 | `placeholder` | `string` | | | Represents the placeholder of the search input |
-| `renderItem` | `func` | :warning: required if your items are objects | | Lets you customize the items as you need. item is passed as an argument|
+| `renderItem` | `func` | :warning: required if your items are objects | | Lets you customize the items as you need. The item is passed as first argument, the item's index from the items list as second argument and the highlightedItem as third argument|
 | `renderGroup` | `func` | :warning: required if you use groups | | Lets you customize the groups as you need. group and matching items are passed as arguments|
 | `renderSelectedItem` | `func` | | | Lets you customize the selected item. item is passed as an argument |
 | `clearNode` | `node` | | `×` | Lets you customize the button that clears the selected value |
@@ -76,15 +77,25 @@ your list.
 |:---|:---|:---|:---|:---|
 | `onChange` | `func` | | | Called whenever the user clicks or selects an item with the keyboard. item is passed as an argument |
 | `onFilter` | `func` | | | Called whenever filter occurs. filter is passed as an argument |
-| `filterItem` | `func` | | | Custom method to filter an item. item and filter is passed as an argument. This method shjould return a `bool` |
+| `filterItem` | `func` | | | Custom method to filter an item. item and filter is passed as an argument. This method should return a `bool` |
 
+
+### Highlighting wordings that match with your search string (if `searchable={true}`)
+If you want your search filter matches to be highlighted in your search results, just use the highlighted item available as third argument of the `renderItem` prop.
+It will wrap the matches in your resulting items with an `<em className='jungle-select-filter-match'></em>` tag.
+
+You can see an example of highlighted search filter matches [here](https://wttj.github.io/react-jungle-select/#highlight-search).
 
 ### DOM default structure
 
 ```html
 <div class="jungle-select jungle-select-opened jungle-select-selected">
   <div class="jungle-select-filter">
-    <input type="text" value="Item" placeholder="Choose an item">
+    <div class="jungle-select-selected-values">
+      <div class="jungle-select-placeholder">Choose an item</div>
+      <div class="jungle-select-selected-value">Selected item</div>
+    </div>
+    <input type="text">
     <div class="jungle-select-clear">×</div>
   </div>
   <div class="jungle-select-list">
@@ -100,20 +111,21 @@ your list.
 
 The parent class is `.jungle-select`.
 
-Others classes are added to this element to indicate the component's status :
+Other classes are added to this element to indicate the component's status :
 
 * `.mode-list`, `.mode-select`: The chosen display mode
-* `.jungle-select-opened`: The list is opened
-* `.jungle-select-selected`: A value has been selected
-* `.jungle-select-focused`: Component has focus
+* `.jungle-select-opened`: the list is opened
+* `.jungle-select-selected`: a value has been selected
+* `.jungle-select-focused`: the component has focus
 
 JungleSelect's controls are wrapped in a `.jungle-select-controls` tag. It contains the following elements :
 
-* `.jungle-select-filter` which wraps the search input, the selected value or the placeholder
+* `.jungle-select-filter` which wraps :
+  * `.jungle-select-values` which is the tag that wraps each selected values (`.jungle-select-selected-value`) or the placeholder (`.jungle-select-placeholder`) if no value has been selected.
+  * the search input
 * `.jungle-select-clear` which is used to clear the selected value and filter
 
 The list container has the `.jungle-select-list` class, groups have the `.jungle-select-group` class and items have the `.jungle-select-item` class.
-
 
 ## Styling
 
