@@ -472,7 +472,7 @@ class JungleSelect extends Component {
     const selected = this.selectedItems()
     return (
       <div className='jungle-select-selected-values'>
-        {selected.length > 0 && this.renderSelectedItems(selected)}
+        {((Immutable.List.isList(selected) && selected.size) || selected.length > 0) && this.renderSelectedItems(selected)}
         {selected.length === 0 && placeholder &&
           <div className='jungle-select-placeholder'>{placeholder}</div>
         }
@@ -499,7 +499,7 @@ class JungleSelect extends Component {
     const { selected } = this.props
     if (!selected) {
       return []
-    } else if (Array.isArray(selected)) {
+    } else if (Array.isArray(selected) || Immutable.List.isList(selected)) {
       return selected
     } else {
       return [selected]

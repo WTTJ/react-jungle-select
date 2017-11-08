@@ -222,6 +222,30 @@ describe('JungleSelect', () => {
       expect(onChangeMock.mock.calls[0][0]).to.deep.eq({ label: 'foo1', groupId: 'hello' })
     })
 
+    test('select item from an array on click with mode list', () => {
+      const onSelectItemMock = jest.fn()
+      const $el = mount(selectComponent({
+        onChange: onSelectItemMock,
+        mode: 'list',
+        items: ['foo', 'bar'],
+        selected: 'bar'
+      }))
+      expect($el.find('.jungle-select-item.selected')).to.have.length(1)
+      expect($el.find('.jungle-select-item.selected').text()).to.eq('bar')
+    })
+
+    test('select item from a list on click with mode list', () => {
+      const onSelectItemMock = jest.fn()
+      const $el = mount(selectComponent({
+        onChange: onSelectItemMock,
+        mode: 'list',
+        items: Immutable.fromJS(['foo', 'bar']),
+        selected: Immutable.fromJS(['bar']),
+      }))
+      expect($el.find('.jungle-select-item.selected')).to.have.length(1)
+      expect($el.find('.jungle-select-item.selected').text()).to.eq('bar')
+    })
+
     describe('Limiting: ', () => {
       test('render limited number of items with a toggle to show all', () => {
         const $el = mount(listComponent({
@@ -935,7 +959,7 @@ describe('JungleSelect', () => {
         expect(onSelectItemMock.mock.calls[1][0]).to.eq('bar')
       })
 
-      test('selected item goes in a .jungle-select-selected-value element', () => {
+      test('selected item from an array goes in a .jungle-select-selected-value element', () => {
         const onSelectItemMock = jest.fn()
         const $el = mount(selectComponent({
           onChange: onSelectItemMock,
@@ -945,6 +969,30 @@ describe('JungleSelect', () => {
         expect($el.find('.jungle-select-selected-values').children()).to.have.length(1)
         expect($el.find('.jungle-select-selected-value')).to.have.length(1)
         expect($el.find('.jungle-select-selected-value').text()).to.eq('bar')
+      })
+
+      test('select item from an array on click with mode select', () => {
+        const onSelectItemMock = jest.fn()
+        const $el = mount(selectComponent({
+          onChange: onSelectItemMock,
+          items: ['foo', 'bar'],
+          selected: 'bar'
+        }))
+        $el.find('.jungle-select-filter').first().simulate('click')
+        expect($el.find('.jungle-select-item.selected')).to.have.length(1)
+        expect($el.find('.jungle-select-item.selected').text()).to.eq('bar')
+      })
+
+      test('select item from a list on click with mode select', () => {
+        const onSelectItemMock = jest.fn()
+        const $el = mount(selectComponent({
+          onChange: onSelectItemMock,
+          items: Immutable.fromJS(['foo', 'bar']),
+          selected: Immutable.fromJS(['bar'])
+        }))
+        $el.find('.jungle-select-filter').first().simulate('click')
+        expect($el.find('.jungle-select-item.selected')).to.have.length(1)
+        expect($el.find('.jungle-select-item.selected').text()).to.eq('bar')
       })
 
       test('should wrap 3 selected items in 3 elements with .jungle-select-selected-value class', () => {
