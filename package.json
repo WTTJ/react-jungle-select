@@ -1,13 +1,13 @@
 {
   "name": "react-jungle-select",
-  "version": "0.0.1",
+  "version": "0.1.0-alpha",
   "description": "React select and list component. Including search, mouse and keyboard support",
   "main": "dist/index.js",
   "repository": "https://github.com/WTTJ/react-jungle-select",
   "author": "klacointe <kevinlacointe@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test": "jest --notify --coverage test/*",
+    "test": "jest --notify test/*",
     "test:watch": "jest --notify --watch test/*",
     "clean": "rm -rf dist/*",
     "lint": "eslint src",

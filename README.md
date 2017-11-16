@@ -127,6 +127,7 @@ JungleSelect's controls are wrapped in a `.jungle-select-controls` tag. It conta
 
 The list container has the `.jungle-select-list` class, groups have the `.jungle-select-group` class and items have the `.jungle-select-item` class.
 
+
 ## Styling
 
 A default stylesheet is provided in the library at `dist/JungleSelect.css`. You can use it directly or write your own theme.
@@ -135,6 +136,7 @@ A default stylesheet is provided in the library at `dist/JungleSelect.css`. You 
 ## Examples
 
 Our [documentation](https://wttj.github.io/react-jungle-select) contains examples to get started with React Jungle Select
+
 
 ## Develop
 
@@ -146,6 +148,11 @@ yarn docs:dev
 ```
 
 Then open [`localhost:9090`](http://localhost:9090) in a browser.
+
+
+## Tests
+
+`yarn test`
 
 
 ## Contributing
