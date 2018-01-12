@@ -820,7 +820,7 @@ var JungleSelect = function (_Component) {
               this.clearNode()
             )
           ),
-          this.listOpened.call(this) && _react2.default.createElement(
+          listWrapper && listWrapper(_react2.default.createElement(
             'div',
             {
               className: 'jungle-select-list',
@@ -828,8 +828,17 @@ var JungleSelect = function (_Component) {
                 return _this6.itemsContainer = e;
               }
             },
-            listWrapper && listWrapper(this.renderList()),
-            !listWrapper && this.renderList()
+            this.renderList()
+          ), this.listOpened.call(this)),
+          !listWrapper && this.listOpened.call(this) && _react2.default.createElement(
+            'div',
+            {
+              className: 'jungle-select-list',
+              ref: function ref(e) {
+                return _this6.itemsContainer = e;
+              }
+            },
+            this.renderList()
           )
         )
       );

@@ -620,17 +620,21 @@ class JungleSelect extends Component {
             }
           </div>
 
-          {::this.listOpened() &&
+          {listWrapper && listWrapper(
             <div
               className='jungle-select-list'
               ref={(e) => this.itemsContainer = e }
             >
-              {listWrapper &&
-                listWrapper(this.renderList())
-              }
-              {!listWrapper &&
-                this.renderList()
-              }
+              {this.renderList()}
+            </div>,
+            ::this.listOpened())
+          }
+          {!listWrapper && ::this.listOpened() &&
+            <div
+              className='jungle-select-list'
+              ref={(e) => this.itemsContainer = e }
+            >
+              {this.renderList()}
             </div>
           }
 

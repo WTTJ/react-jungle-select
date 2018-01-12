@@ -87,5 +87,19 @@
     "js": "ReduxForm",
     "json": "narcos",
     "description": "Last example to show you how well React-Jungle-Select integrates with ReduxForm and its callbaks (onChange, onFocus, onBlur)."
+  },
+  {
+    "id": "css-transition-example",
+    "name": "Animated Select",
+    "js": "CssTransitionExample",
+    "json": "narcos",
+    "description": "Example to show you how to use the react-transition-groups library to animate the results list."
+  },
+  {
+    "id": "custom-scrollbars-example",
+    "name": "Custom Scroll Select",
+    "js": "CustomScrollbarsExample",
+    "json": "simpsons",
+    "description": "Example to show you how to use the react-custom-scrollbars library to scroll among the results list."
   }
 ]

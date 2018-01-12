@@ -214,3 +214,30 @@
     cursor: pointer
     text-decoration: underline
     font-size: 12px
+
+  // react-transition-group styles
+  .fade-enter
+    opacity: 0.01
+
+  .fade-enter.fade-enter-active
+    opacity: 1
+    transition: opacity 300ms ease-in
+
+  .fade-exit
+    opacity: 1
+
+  .fade-exit.fade-exit-active
+    opacity: 0.01
+    transition: opacity 300ms ease-in
+
+  // react-custom-scrollbars styles
+  .custom-scrollbars
+    border: 1px solid #CCC
+      top: none
+      radius: 0 0 4px 4px
+    box-sizing: border-box
+    .jungle-select-list
+      position: static
+      top: 0
+      overflow: visible
+      border: 0
