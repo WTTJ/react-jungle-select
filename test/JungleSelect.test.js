@@ -258,6 +258,30 @@ describe('JungleSelect', () => {
     })
 
     describe('Highlighting:', () => {
+      test('highlight filter matching wordings from string items with special characters', () => {
+        const $el = mount(listComponent({
+          items: [
+            'Fôö foo',
+            'fOò',
+            'bar1',
+            'bAr2'
+          ],
+          searchable: true,
+          renderItem: (item, index, highlightedItem) => highlightedItem
+
+        }))
+
+        expect($el.find('.jungle-select-item')).to.have.length(4)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 0)
+
+        $el.find('.jungle-select-filter input').first().simulate('change', { target: { value: 'foo ' } })
+        expect($el.find('.jungle-select-item')).to.have.length(2)
+        expect($el.find('.jungle-select-item').first().html()).to.have.entriesCount('jungle-select-filter-match', 2)
+        expect($el.find('.jungle-select-item').last().html()).to.have.entriesCount('jungle-select-filter-match', 1)
+
+      })
+
       test('highlight filter matching wordings from string items', () => {
         const $el = mount(listComponent({
           items: [

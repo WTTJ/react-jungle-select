@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import { HotKeys } from 'react-hotkeys'
 import Immutable from 'immutable'
 import onClickOutside from 'react-onclickoutside'
-import { remove as removeDiacritics } from 'diacritics'
+import { remove as removeDiacritics, replacementList } from 'diacritics'
 
 class JungleSelect extends Component {
   state = {
@@ -24,6 +24,8 @@ class JungleSelect extends Component {
     super(props)
     this.itemElements = []
     this.highlights = []
+    this.letterToDiacritics = {}
+    replacementList.forEach(c => this.letterToDiacritics[c.base] = c.chars)
   }
 
   handleClickOutside() {
@@ -410,7 +412,14 @@ class JungleSelect extends Component {
 
   highlightFilterMatches(text) {
     const { filter } = this.state
-    let regexedFilter = filter.trim().replace(/[^\w\s]/g, '\\$&').replace(/[\s]+/g, '|')
+    let regexedFilter = removeDiacritics(filter).trim()
+      .replace(/[\s]+/g, '|')
+      .split('')
+      .map(l => {
+        if (l === '|') { return '|'}
+        return this.letterToDiacritics[l] ? `[${l + this.letterToDiacritics[l]}]` : l
+      })
+      .join('')
     if (regexedFilter === '') return text
     let regex = new RegExp( regexedFilter, 'gi')
     let subst = `<em class='jungle-select-filter-match'>$&</em>`
