@@ -64,6 +64,10 @@ var JungleSelect = function (_Component) {
 
     _this.itemElements = [];
     _this.highlights = [];
+    _this.letterToDiacritics = {};
+    _diacritics.replacementList.forEach(function (c) {
+      return _this.letterToDiacritics[c.base] = c.chars;
+    });
     return _this;
   }
 
@@ -552,9 +556,16 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'highlightFilterMatches',
     value: function highlightFilterMatches(text) {
+      var _this5 = this;
+
       var filter = this.state.filter;
 
-      var regexedFilter = filter.trim().replace(/[^\w\s]/g, '\\$&').replace(/[\s]+/g, '|');
+      var regexedFilter = (0, _diacritics.remove)(filter).trim().replace(/[\s]+/g, '|').split('').map(function (l) {
+        if (l === '|') {
+          return '|';
+        }
+        return _this5.letterToDiacritics[l] ? '[' + (l + _this5.letterToDiacritics[l]) + ']' : l;
+      }).join('');
       if (regexedFilter === '') return text;
       var regex = new RegExp(regexedFilter, 'gi');
       var subst = '<em class=\'jungle-select-filter-match\'>$&</em>';
@@ -721,7 +732,7 @@ var JungleSelect = function (_Component) {
     key: 'render',
     value: function render() {
       var _context,
-          _this5 = this;
+          _this6 = this;
 
       var keyMap = {
         'up': 'up',
@@ -761,7 +772,7 @@ var JungleSelect = function (_Component) {
         _reactHotkeys.HotKeys,
         {
           ref: function ref(e) {
-            return _this5.container = e;
+            return _this6.container = e;
           },
           keyMap: keyMap,
           handlers: handlers,
@@ -790,7 +801,7 @@ var JungleSelect = function (_Component) {
                 this.displayPlaceholderOrValue(),
                 searchable && _react2.default.createElement('input', {
                   ref: function ref(e) {
-                    return _this5.filterInput = e;
+                    return _this6.filterInput = e;
                   },
                   value: filter,
                   onChange: this.filter.bind(this),
@@ -814,7 +825,7 @@ var JungleSelect = function (_Component) {
             {
               className: 'jungle-select-list',
               ref: function ref(e) {
-                return _this5.itemsContainer = e;
+                return _this6.itemsContainer = e;
               }
             },
             listWrapper && listWrapper(this.renderList()),
