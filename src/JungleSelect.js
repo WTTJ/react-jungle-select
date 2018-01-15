@@ -331,45 +331,64 @@ class JungleSelect extends Component {
   }
 
   renderList() {
-    const { groups, renderGroup, limit } = this.props
+    const { groups, renderGroup, limit, listWrapper } = this.props
     const { sortedItems } = this.state
     const { showAll } = this.state
     let counter = -1
+    let list
     if (groups) {
-      return groups.map((group, groupIndex) => {
-        const groupItems = this.filteredItems(this.itemsForGroup(group))
-        return (
-          <section
-            key={groupIndex}
-            className='jungle-select-group'
-          >
-            <div className='jungle-select-group-title'>{renderGroup(group, groupItems)}</div>
-            <div>
-              {groupItems.map((item, itemIndex) => {
-                counter = counter + 1
-                return this.renderInternalItem(item, counter)
-              })}
-            </div>
-          </section>
-        )
-      })
+      list = (
+        <div
+          className='jungle-select-list'
+          ref={(e) => this.itemsContainer = e }
+        >
+          {groups.map((group, groupIndex) => {
+            const groupItems = this.filteredItems(this.itemsForGroup(group))
+            return (
+              <section
+                key={groupIndex}
+                className='jungle-select-group'
+              >
+                <div className='jungle-select-group-title'>{renderGroup(group, groupItems)}</div>
+                <div>
+                  {groupItems.map((item, itemIndex) => {
+                    counter = counter + 1
+                    return this.renderInternalItem(item, counter)
+                  })}
+                </div>
+              </section>
+            )
+          })}
+        </div>
+      )
     } else {
       const limited = this.filteredAndLimitedItems(sortedItems)
       const filtered = this.filteredItems(sortedItems)
       const limitedSize = Immutable.List.isList(limited) ? limited.size : limited.length
       const filteredSize = Immutable.List.isList(filtered) ? filtered.size : filtered.length
-      if (!limitedSize) { return null }
-      return (
-        <div>
-          {limited.map((item, itemIndex) => {
-            counter = counter + 1
-            return this.renderInternalItem(item, counter)
-          })}
-          {(limitedSize < filteredSize || (showAll && limitedSize > limit )) &&
-            this.renderShowAll(showAll, ::this.toggleShowAll)
-          }
+      if (!limitedSize) { list = null }
+      list = (
+        <div
+          className='jungle-select-list'
+          ref={(e) => this.itemsContainer = e }
+        >
+          <div>
+            {limited.map((item, itemIndex) => {
+              counter = counter + 1
+              return this.renderInternalItem(item, counter)
+            })}
+            {(limitedSize < filteredSize || (showAll && limitedSize > limit )) &&
+              this.renderShowAll(showAll, ::this.toggleShowAll)
+            }
+          </div>
         </div>
       )
+    }
+    if (listWrapper) {
+      return listWrapper(list, ::this.listOpened())
+    }
+    else {
+      return ::this.listOpened() ? list : null
     }
   }
 
@@ -561,7 +580,7 @@ class JungleSelect extends Component {
       'esc': ::this.onClear
     }
     const {
-      searchable, listWrapper, classList, clearable, mode
+      searchable, classList, clearable, mode
     } = this.props
     const { filter, focused } = this.state
     const selected = this.selectedItems()
@@ -619,25 +638,7 @@ class JungleSelect extends Component {
               </div>
             }
           </div>
-
-          {listWrapper && listWrapper(
-            <div
-              className='jungle-select-list'
-              ref={(e) => this.itemsContainer = e }
-            >
-              {this.renderList()}
-            </div>,
-            ::this.listOpened())
-          }
-          {!listWrapper && ::this.listOpened() &&
-            <div
-              className='jungle-select-list'
-              ref={(e) => this.itemsContainer = e }
-            >
-              {this.renderList()}
-            </div>
-          }
-
+          {this.renderList()}
         </div>
       </HotKeys>
     )

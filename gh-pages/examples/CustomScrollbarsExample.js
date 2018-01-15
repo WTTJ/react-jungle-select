@@ -7,7 +7,7 @@ require('../../src/JungleSelect.sass')
 export default class CustomScrollbarsExample extends Component {
   state = { value: null }
 
-  listWrapper(list, opened) {
+  listWrapper(children, opened) {
     if (opened) {
       return (
         <Scrollbars
@@ -17,7 +17,7 @@ export default class CustomScrollbarsExample extends Component {
             height: 350
           }}
         >
-          {list}
+          {children}
         </Scrollbars>
       )
     }

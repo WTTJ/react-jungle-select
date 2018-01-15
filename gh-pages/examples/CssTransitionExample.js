@@ -7,7 +7,7 @@ require('../../src/JungleSelect.sass')
 export default class CssTransitionExample extends Component {
   state = { value: null }
 
-  listWrapper(list, opened) {
+  listWrapper(children, opened) {
     return (
       <CSSTransition
         in={!!opened}
@@ -15,7 +15,7 @@ export default class CssTransitionExample extends Component {
         classNames='fade'
         unmountOnExit={true}
       >
-        {list}
+        {children}
       </CSSTransition>
     )
   }

@@ -459,52 +459,77 @@ var JungleSelect = function (_Component) {
       var _props5 = this.props,
           groups = _props5.groups,
           renderGroup = _props5.renderGroup,
-          limit = _props5.limit;
+          limit = _props5.limit,
+          listWrapper = _props5.listWrapper;
       var sortedItems = this.state.sortedItems;
       var showAll = this.state.showAll;
 
       var counter = -1;
+      var list = void 0;
       if (groups) {
-        return groups.map(function (group, groupIndex) {
-          var groupItems = _this3.filteredItems(_this3.itemsForGroup(group));
-          return _react2.default.createElement(
-            'section',
-            {
-              key: groupIndex,
-              className: 'jungle-select-group'
-            },
-            _react2.default.createElement(
-              'div',
-              { className: 'jungle-select-group-title' },
-              renderGroup(group, groupItems)
-            ),
-            _react2.default.createElement(
-              'div',
-              null,
-              groupItems.map(function (item, itemIndex) {
-                counter = counter + 1;
-                return _this3.renderInternalItem(item, counter);
-              })
-            )
-          );
-        });
+        list = _react2.default.createElement(
+          'div',
+          {
+            className: 'jungle-select-list',
+            ref: function ref(e) {
+              return _this3.itemsContainer = e;
+            }
+          },
+          groups.map(function (group, groupIndex) {
+            var groupItems = _this3.filteredItems(_this3.itemsForGroup(group));
+            return _react2.default.createElement(
+              'section',
+              {
+                key: groupIndex,
+                className: 'jungle-select-group'
+              },
+              _react2.default.createElement(
+                'div',
+                { className: 'jungle-select-group-title' },
+                renderGroup(group, groupItems)
+              ),
+              _react2.default.createElement(
+                'div',
+                null,
+                groupItems.map(function (item, itemIndex) {
+                  counter = counter + 1;
+                  return _this3.renderInternalItem(item, counter);
+                })
+              )
+            );
+          })
+        );
       } else {
         var limited = this.filteredAndLimitedItems(sortedItems);
         var filtered = this.filteredItems(sortedItems);
         var limitedSize = _immutable2.default.List.isList(limited) ? limited.size : limited.length;
         var filteredSize = _immutable2.default.List.isList(filtered) ? filtered.size : filtered.length;
         if (!limitedSize) {
-          return null;
+          list = null;
         }
-        return _react2.default.createElement(
+        list = _react2.default.createElement(
           'div',
-          null,
-          limited.map(function (item, itemIndex) {
-            counter = counter + 1;
-            return _this3.renderInternalItem(item, counter);
-          }),
-          (limitedSize < filteredSize || showAll && limitedSize > limit) && this.renderShowAll(showAll, this.toggleShowAll.bind(this))
+          {
+            className: 'jungle-select-list',
+            ref: function ref(e) {
+              return _this3.itemsContainer = e;
+            }
+          },
+          _react2.default.createElement(
+            'div',
+            null,
+            limited.map(function (item, itemIndex) {
+              counter = counter + 1;
+              return _this3.renderInternalItem(item, counter);
+            }),
+            (limitedSize < filteredSize || showAll && limitedSize > limit) && this.renderShowAll(showAll, this.toggleShowAll.bind(this))
+          )
         );
+      }
+      if (listWrapper) {
+        return listWrapper(list, this.listOpened.call(this));
+      } else {
+        return this.listOpened.call(this) ? list : null;
       }
     }
   }, {
@@ -748,7 +773,6 @@ var JungleSelect = function (_Component) {
       };
       var _props7 = this.props,
           searchable = _props7.searchable,
-          listWrapper = _props7.listWrapper,
           classList = _props7.classList,
           clearable = _props7.clearable,
           mode = _props7.mode;
@@ -820,26 +844,7 @@ var JungleSelect = function (_Component) {
               this.clearNode()
             )
           ),
-          listWrapper && listWrapper(_react2.default.createElement(
-            'div',
-            {
-              className: 'jungle-select-list',
-              ref: function ref(e) {
-                return _this6.itemsContainer = e;
-              }
-            },
-            this.renderList()
-          ), this.listOpened.call(this)),
-          !listWrapper && this.listOpened.call(this) && _react2.default.createElement(
-            'div',
-            {
-              className: 'jungle-select-list',
-              ref: function ref(e) {
-                return _this6.itemsContainer = e;
-              }
-            },
-            this.renderList()
-          )
+          this.renderList()
         )
       );
     }
