@@ -839,7 +839,7 @@ var JungleSelect = function (_Component) {
   return JungleSelect;
 }(_react.Component);
 
-JungleSelect.PropTypes = {
+JungleSelect.propTypes = {
   mode: _propTypes2.default.bool,
   items: _propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object])).isRequired,
   groups: _propTypes2.default.arrayOf(_propTypes2.default.object),

@@ -640,7 +640,7 @@ class JungleSelect extends Component {
   }
 }
 
-JungleSelect.PropTypes = {
+JungleSelect.propTypes = {
   mode: PropTypes.bool,
   items: PropTypes.arrayOf(
     PropTypes.oneOfType([
