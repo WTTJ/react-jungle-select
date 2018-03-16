@@ -641,16 +641,23 @@ class JungleSelect extends Component {
 }
 
 JungleSelect.propTypes = {
-  mode: PropTypes.bool,
-  items: PropTypes.arrayOf(
-    PropTypes.oneOfType([
-      PropTypes.string,
+  mode: PropTypes.string,
+  items: PropTypes.oneOfType([
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+        PropTypes.object
+      ])
+    ),
+    PropTypes.instanceOf(Immutable.List)
+  ]).isRequired,
+  groups:PropTypes.oneOfType([
+    PropTypes.arrayOf(
       PropTypes.object
-    ])
-  ).isRequired,
-  groups: PropTypes.arrayOf(
-    PropTypes.object
-  ),
+    ),
+    PropTypes.instanceOf(Immutable.List)
+  ]),
   selected: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,
