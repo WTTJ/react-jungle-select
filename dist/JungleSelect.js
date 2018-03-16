@@ -840,9 +840,9 @@ var JungleSelect = function (_Component) {
 }(_react.Component);
 
 JungleSelect.propTypes = {
-  mode: _propTypes2.default.bool,
-  items: _propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object])).isRequired,
-  groups: _propTypes2.default.arrayOf(_propTypes2.default.object),
+  mode: _propTypes2.default.string,
+  items: _propTypes2.default.oneOfType([_propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number, _propTypes2.default.object])), _propTypes2.default.instanceOf(_immutable2.default.List)]).isRequired,
+  groups: _propTypes2.default.oneOfType([_propTypes2.default.arrayOf(_propTypes2.default.object), _propTypes2.default.instanceOf(_immutable2.default.List)]),
   selected: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object, _propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object]))]),
   filteringMode: _propTypes2.default.string,
   searchable: _propTypes2.default.bool,
