@@ -11,6 +11,30 @@ a {
   color: inherit;
   text-decoration: none; }
 
+.code {
+  flex: 1;
+  max-width: calc((100vw - 250px) / 2);
+  padding: 40px 40px 60px 40px;
+  background-color: #373942;
+  box-sizing: border-box; }
+  .code.first-child {
+    padding-top: 40px; }
+  .code pre {
+    flex: 1;
+    font-size: 13px;
+    background-color: #31333B;
+    border-radius: 5px; }
+* {
+  margin: 0;
+  padding: 0; }
+
+li {
+  list-style: none; }
+
+a {
+  color: inherit;
+  text-decoration: none; }
+
 .btn {
   position: relative;
   display: flex;
@@ -129,30 +153,6 @@ a {
       font-size: 12px;
       line-height: 14px;
       color: #373942; }
-* {
-  margin: 0;
-  padding: 0; }
-
-li {
-  list-style: none; }
-
-a {
-  color: inherit;
-  text-decoration: none; }
-
-.code {
-  flex: 1;
-  max-width: calc((100vw - 250px) / 2);
-  padding: 40px 40px 60px 40px;
-  background-color: #373942;
-  box-sizing: border-box; }
-  .code.first-child {
-    padding-top: 40px; }
-  .code pre {
-    flex: 1;
-    font-size: 13px;
-    background-color: #31333B;
-    border-radius: 5px; }
 .jungle-select {
   position: relative;
   max-width: 300px;
