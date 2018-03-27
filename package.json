@@ -1,6 +1,6 @@
 {
   "name": "react-jungle-select",
-  "version": "0.1.0-alpha2",
+  "version": "0.1.0-alpha3",
   "description": "React select and list component. Including search, mouse and keyboard support",
   "main": "dist/index.js",
   "repository": "https://github.com/WTTJ/react-jungle-select",
@@ -24,6 +24,7 @@
     "immutable": "^3.8.1",
     "prop-types": "^15.5.10",
     "react-hotkeys": "^0.10.0",
+    "react-immutable-proptypes": "=2.1.0",
     "react-onclickoutside": "^6.1.1"
   },
   "devDependencies": {

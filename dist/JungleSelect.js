@@ -16,6 +16,10 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _reactImmutableProptypes = require('react-immutable-proptypes');
+
+var _reactImmutableProptypes2 = _interopRequireDefault(_reactImmutableProptypes);
+
 var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
@@ -839,11 +843,15 @@ var JungleSelect = function (_Component) {
   return JungleSelect;
 }(_react.Component);
 
+var arrayOrListOfItems = _propTypes2.default.oneOfType([_propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number, _propTypes2.default.object])), _reactImmutableProptypes2.default.listOf(_propTypes2.default.oneOfType([_reactImmutableProptypes2.default.map, _propTypes2.default.string, _propTypes2.default.number, _propTypes2.default.object]))]);
+
+var arrayOrListOfGroups = _propTypes2.default.oneOfType([_propTypes2.default.arrayOf(_propTypes2.default.object), _reactImmutableProptypes2.default.listOf(_propTypes2.default.oneOfType([_reactImmutableProptypes2.default.map]))]);
+
 JungleSelect.propTypes = {
   mode: _propTypes2.default.string,
-  items: _propTypes2.default.oneOfType([_propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number, _propTypes2.default.object])), _propTypes2.default.instanceOf(_immutable2.default.List)]).isRequired,
-  groups: _propTypes2.default.oneOfType([_propTypes2.default.arrayOf(_propTypes2.default.object), _propTypes2.default.instanceOf(_immutable2.default.List)]),
-  selected: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object, _propTypes2.default.arrayOf(_propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object]))]),
+  items: arrayOrListOfItems.isRequired,
+  groups: arrayOrListOfGroups,
+  selected: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object, arrayOrListOfItems]),
   filteringMode: _propTypes2.default.string,
   searchable: _propTypes2.default.bool,
   limit: _propTypes2.default.number,

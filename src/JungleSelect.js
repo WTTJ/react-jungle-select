@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import ImmutablePropTypes from 'react-immutable-proptypes'
 import ReactDOM from 'react-dom'
 import { HotKeys } from 'react-hotkeys'
 import Immutable from 'immutable'
@@ -640,33 +641,43 @@ class JungleSelect extends Component {
   }
 }
 
+const arrayOrListOfItems = PropTypes.oneOfType([
+  PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.object
+    ])
+  ),
+  ImmutablePropTypes.listOf(
+    PropTypes.oneOfType([
+      ImmutablePropTypes.map,
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.object
+    ])
+  )
+])
+
+const arrayOrListOfGroups = PropTypes.oneOfType([
+  PropTypes.arrayOf(
+    PropTypes.object
+  ),
+  ImmutablePropTypes.listOf(
+    PropTypes.oneOfType([
+      ImmutablePropTypes.map
+    ])
+  )
+])
+
 JungleSelect.propTypes = {
   mode: PropTypes.string,
-  items: PropTypes.oneOfType([
-    PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-        PropTypes.object
-      ])
-    ),
-    PropTypes.instanceOf(Immutable.List)
-  ]).isRequired,
-  groups:PropTypes.oneOfType([
-    PropTypes.arrayOf(
-      PropTypes.object
-    ),
-    PropTypes.instanceOf(Immutable.List)
-  ]),
+  items: arrayOrListOfItems.isRequired,
+  groups: arrayOrListOfGroups,
   selected: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,
-    PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.object
-      ])
-    )
+    arrayOrListOfItems
   ]),
   filteringMode: PropTypes.string,
   searchable: PropTypes.bool,
