@@ -851,7 +851,7 @@ JungleSelect.propTypes = {
   mode: _propTypes2.default.string,
   items: arrayOrListOfItems.isRequired,
   groups: arrayOrListOfGroups,
-  selected: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.object, arrayOrListOfItems]),
+  selected: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string, _propTypes2.default.object, arrayOrListOfItems]),
   filteringMode: _propTypes2.default.string,
   searchable: _propTypes2.default.bool,
   limit: _propTypes2.default.number,

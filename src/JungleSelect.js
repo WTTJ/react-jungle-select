@@ -675,6 +675,7 @@ JungleSelect.propTypes = {
   items: arrayOrListOfItems.isRequired,
   groups: arrayOrListOfGroups,
   selected: PropTypes.oneOfType([
+    PropTypes.number,
     PropTypes.string,
     PropTypes.object,
     arrayOrListOfItems
