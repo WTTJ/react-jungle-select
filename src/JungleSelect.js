@@ -604,7 +604,7 @@ class JungleSelect extends Component {
                       onChange={::this.filter}
                       onFocus={::this.onFocusFilter}
                       onBlur={::this.onBlurFilter}
-                      autoComplete='off'
+                      autoComplete='disabled'
                     />
                   }
                 </a>
