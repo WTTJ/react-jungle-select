@@ -755,14 +755,15 @@ var JungleSelect = function (_Component) {
           listWrapper = _props7.listWrapper,
           classList = _props7.classList,
           clearable = _props7.clearable,
-          mode = _props7.mode;
+          mode = _props7.mode,
+          className = _props7.className;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
 
       var selected = this.selectedItems();
 
-      var classNames = ['jungle-select'];
+      var classNames = ['jungle-select'].concat(className);
       this.listOpened() && classNames.push('jungle-select-opened');
       selected.length && classNames.push('jungle-select-selected');
       filter && filter.length && classNames.push('jungle-select-filtered');
@@ -811,7 +812,7 @@ var JungleSelect = function (_Component) {
                   onChange: this.filter.bind(this),
                   onFocus: this.onFocusFilter.bind(this),
                   onBlur: this.onBlurFilter.bind(this),
-                  autoComplete: 'off'
+                  autoComplete: 'disabled'
                 })
               )
             ),
