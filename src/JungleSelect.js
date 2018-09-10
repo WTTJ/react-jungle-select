@@ -562,12 +562,12 @@ class JungleSelect extends Component {
       'esc': ::this.onClear
     }
     const {
-      searchable, listWrapper, classList, clearable, mode
+      searchable, listWrapper, classList, clearable, mode, className
     } = this.props
     const { filter, focused } = this.state
     const selected = this.selectedItems()
 
-    let classNames = ['jungle-select']
+    let classNames = ['jungle-select'].concat(className)
     this.listOpened() && classNames.push('jungle-select-opened')
     selected.length && classNames.push('jungle-select-selected')
     filter && filter.length && classNames.push('jungle-select-filtered')
