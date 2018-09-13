@@ -78,6 +78,7 @@ var JungleSelect = function (_Component) {
   _createClass(JungleSelect, [{
     key: 'handleClickOutside',
     value: function handleClickOutside() {
+      debugger;
       this.setState({ listOpened: false, filter: '' });
     }
   }, {
@@ -763,11 +764,12 @@ var JungleSelect = function (_Component) {
 
       var selected = this.selectedItems();
 
-      var classNames = ['jungle-select'].concat(className);
+      var classNames = ['jungle-select'];
       this.listOpened() && classNames.push('jungle-select-opened');
       selected.length && classNames.push('jungle-select-selected');
       filter && filter.length && classNames.push('jungle-select-filtered');
       focused && classNames.push('jungle-select-focused');
+      className && classNames.push(className);
       if (classList) {
         classNames = classNames.concat(classList);
       }

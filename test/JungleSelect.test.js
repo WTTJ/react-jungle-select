@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Immutable from 'immutable'
 import chai, { expect } from 'chai'
-chai.use(require('chai-string'))
-import Enzyme, { shallow, mount, render } from 'enzyme'
+import Enzyme, { mount } from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
-import TestUtils from 'react-dom/test-utils'
 import JungleSelect from '../src/index'
 import { remove as removeDiacritics } from 'diacritics'
+
+chai.use(require('chai-string'))
 
 const sanitizeSearchString = (string) =>
   removeDiacritics(string.toLowerCase().replace(/ +(?= )/g,'').trim())
@@ -957,6 +957,33 @@ describe('JungleSelect', () => {
         $el.find('.jungle-select-item').last().simulate('click')
         expect(onSelectItemMock.mock.calls.length).to.eq(2)
         expect(onSelectItemMock.mock.calls[1][0]).to.eq('bar')
+      })
+
+      test('remove focus state on click outside', () => {
+        const onSelectItemMock = jest.fn()
+        const $el = mount(
+          <div>
+            <span
+              className='outside-element'
+            >
+              Outside element
+            </span>
+            <JungleSelect
+              mode='select'
+              items={['foo', 'bar']}
+              onChange={onSelectItemMock}
+            />
+          </div>
+        )
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-opened')).to.be.false
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.false
+        $el.find('.jungle-select .jungle-select-filter').first().simulate('click')
+        $el.find('.jungle-select').first().simulate('focus')
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-opened')).to.be.true
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.true
+        $el.find('.outside-element').first().simulate('click')
+        console.log('el.html() : ', $el.html())
+        console.log('outside-element : ', $el.find('.outside-element').html())
       })
 
       test('selected item goes in a .jungle-select-selected-value element', () => {
