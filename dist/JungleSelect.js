@@ -78,6 +78,9 @@ var JungleSelect = function (_Component) {
   _createClass(JungleSelect, [{
     key: 'handleClickOutside',
     value: function handleClickOutside() {
+      var focused = this.state.focused;
+
+      focused && this.onBlurFilter();
       this.setState({ listOpened: false, filter: '' });
     }
   }, {
@@ -619,7 +622,7 @@ var JungleSelect = function (_Component) {
     }
   }, {
     key: 'toggleList',
-    value: function toggleList() {
+    value: function toggleList(e) {
       var searchable = this.props.searchable;
 
       this.selectMode() && this.state.listOpened && !searchable ? this.blur() : this.focus();
@@ -704,7 +707,6 @@ var JungleSelect = function (_Component) {
       var element = this.focusableElement();
       if (element) {
         element.focus();
-        this.onFocusFilter();
       }
     }
   }, {
@@ -713,7 +715,6 @@ var JungleSelect = function (_Component) {
       var element = this.focusableElement();
       if (element) {
         element.blur();
-        this.onBlurFilter();
       }
     }
   }, {
@@ -722,6 +723,7 @@ var JungleSelect = function (_Component) {
       var onFocus = this.props.onFocus;
 
       onFocus && onFocus();
+      if (this.state.focused) return;
       this.setState({ focused: true });
     }
   }, {
@@ -730,7 +732,14 @@ var JungleSelect = function (_Component) {
       var onBlur = this.props.onBlur;
 
       onBlur && onBlur();
+      if (!this.state.focused) return;
       this.setState({ focused: false });
+    }
+  }, {
+    key: 'onTab',
+    value: function onTab() {
+      this.selectHighlightedItem();
+      this.onBlurFilter();
     }
   }, {
     key: 'render',
@@ -741,14 +750,16 @@ var JungleSelect = function (_Component) {
       var keyMap = {
         'up': 'up',
         'down': 'down',
-        'enter': ['enter', 'tab', 'shift+tab'],
+        'enter': 'enter',
         'esc': 'esc'
       };
       var handlers = {
         'up': (_context = this.highlightItemFromKeyboard).bind.call(_context, this, 'prev'),
         'down': (_context = this.highlightItemFromKeyboard).bind.call(_context, this, 'next'),
         'enter': this.selectHighlightedItem.bind(this),
-        'esc': this.onClear.bind(this)
+        'esc': this.onClear.bind(this),
+        'tab': this.onTab.bind(this),
+        'shift+tab': this.onTab.bind(this)
       };
       var _props7 = this.props,
           searchable = _props7.searchable,
@@ -782,7 +793,8 @@ var JungleSelect = function (_Component) {
           keyMap: keyMap,
           handlers: handlers,
           focused: true,
-          className: classNames.join(' ')
+          className: classNames.join(' '),
+          onFocus: this.onFocusFilter.bind(this)
         },
         _react2.default.createElement(
           'div',
@@ -799,9 +811,7 @@ var JungleSelect = function (_Component) {
                 {
                   className: 'jungle-select-filter',
                   onClick: this.toggleList.bind(this),
-                  tabIndex: !searchable ? 0 : -1,
-                  onFocus: !searchable ? this.onFocusFilter.bind(this) : null,
-                  onBlur: !searchable ? this.onBlurFilter.bind(this) : null
+                  tabIndex: searchable ? -1 : 0
                 },
                 this.displayPlaceholderOrValue(),
                 searchable && _react2.default.createElement('input', {
@@ -810,8 +820,6 @@ var JungleSelect = function (_Component) {
                   },
                   value: filter,
                   onChange: this.filter.bind(this),
-                  onFocus: this.onFocusFilter.bind(this),
-                  onBlur: this.onBlurFilter.bind(this),
                   autoComplete: 'disabled'
                 })
               )

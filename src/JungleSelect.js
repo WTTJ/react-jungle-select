@@ -30,7 +30,9 @@ class JungleSelect extends Component {
   }
 
   handleClickOutside() {
-    this.setState({ listOpened: false, filter: '' })
+    const { focused } = this.state
+    focused && this.onBlurFilter()
+    this.setState({ listOpened: false, filter: ''})
   }
 
   componentDidMount() {
@@ -458,7 +460,7 @@ class JungleSelect extends Component {
     this.setState({ listOpened: false, filter: '' })
   }
 
-  toggleList() {
+  toggleList(e) {
     const { searchable } = this.props
     this.selectMode() && this.state.listOpened && !searchable ? this.blur() : this.focus()
     this.setState({ listOpened: !this.state.listOpened })
@@ -524,7 +526,6 @@ class JungleSelect extends Component {
     const element = this.focusableElement()
     if (element) {
       element.focus()
-      this.onFocusFilter()
     }
   }
 
@@ -532,34 +533,42 @@ class JungleSelect extends Component {
     const element = this.focusableElement()
     if (element) {
       element.blur()
-      this.onBlurFilter()
     }
   }
 
   onFocusFilter() {
     const { onFocus } = this.props
     onFocus && onFocus()
+    if (this.state.focused) return
     this.setState({ focused: true })
   }
 
   onBlurFilter() {
     const { onBlur } = this.props
     onBlur && onBlur()
+    if (!this.state.focused ) return
     this.setState({ focused: false })
+  }
+
+  onTab() {
+    this.selectHighlightedItem()
+    this.onBlurFilter()
   }
 
   render() {
     const keyMap = {
       'up': 'up',
       'down': 'down',
-      'enter': ['enter', 'tab', 'shift+tab'],
+      'enter': 'enter',
       'esc': 'esc'
     }
     const handlers = {
       'up': ::this.highlightItemFromKeyboard.bind(this, 'prev'),
       'down': ::this.highlightItemFromKeyboard.bind(this, 'next'),
       'enter': ::this.selectHighlightedItem,
-      'esc': ::this.onClear
+      'esc': ::this.onClear,
+      'tab': ::this.onTab,
+      'shift+tab': ::this.onTab
     }
     const {
       searchable, listWrapper, classList, clearable, mode, className
@@ -582,6 +591,7 @@ class JungleSelect extends Component {
         handlers={handlers}
         focused={true}
         className={classNames.join(' ')}
+        onFocus={::this.onFocusFilter}
       >
         <div>
 
@@ -592,9 +602,7 @@ class JungleSelect extends Component {
                 <a
                   className='jungle-select-filter'
                   onClick={::this.toggleList}
-                  tabIndex={!searchable ? 0 : -1}
-                  onFocus={!searchable ? ::this.onFocusFilter : null}
-                  onBlur={!searchable ? ::this.onBlurFilter : null}
+                  tabIndex={searchable ? -1 : 0}
                 >
                   {this.displayPlaceholderOrValue()}
                   {searchable &&
@@ -602,8 +610,6 @@ class JungleSelect extends Component {
                       ref={(e) => this.filterInput = e }
                       value={filter}
                       onChange={::this.filter}
-                      onFocus={::this.onFocusFilter}
-                      onBlur={::this.onBlurFilter}
                       autoComplete='disabled'
                     />
                   }
