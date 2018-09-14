@@ -19,6 +19,7 @@ export default class BasicSelect extends Component {
           selected={value}
           onChange={(value) => this.setState({ value }) }
           items={narcos}
+          placeholder='Choose your narco'
           clearable={true}
           mode='select'
         />

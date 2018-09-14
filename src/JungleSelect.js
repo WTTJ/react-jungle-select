@@ -33,7 +33,6 @@ class JungleSelect extends Component {
     const { focused } = this.state
     focused && this.onBlurFilter()
     this.setState({ listOpened: false, filter: ''})
-    console.log('FIRST : ', this.state)
   }
 
   componentDidMount() {
@@ -526,8 +525,6 @@ class JungleSelect extends Component {
   focus() {
     const element = this.focusableElement()
     if (element) {
-      const { onFocus } = this.props
-      onFocus && onFocus()
       element.focus()
     }
   }
@@ -535,20 +532,20 @@ class JungleSelect extends Component {
   blur() {
     const element = this.focusableElement()
     if (element) {
-      const { onBlur } = this.props
-      onBlur && onBlur()
       element.blur()
     }
   }
 
   onFocusFilter() {
-    console.log('onFocusFilter focused :', this.state.focused)
+    const { onFocus } = this.props
+    onFocus && onFocus()
     if (this.state.focused) return
     this.setState({ focused: true })
   }
 
   onBlurFilter() {
-    console.log('onBlurFilter focused :', this.state.focused)
+    const { onBlur } = this.props
+    onBlur && onBlur()
     if (!this.state.focused ) return
     this.setState({ focused: false })
   }

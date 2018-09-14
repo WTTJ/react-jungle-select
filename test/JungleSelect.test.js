@@ -959,31 +959,59 @@ describe('JungleSelect', () => {
         expect(onSelectItemMock.mock.calls[1][0]).to.eq('bar')
       })
 
-      test('remove focus state on click outside', () => {
+      test('remove focus state on click outside with searchable={false}', () => {
         const onSelectItemMock = jest.fn()
-        const $el = mount(
-          <div>
-            <span
-              className='outside-element'
-            >
-              Outside element
-            </span>
-            <JungleSelect
-              mode='select'
-              items={['foo', 'bar']}
-              onChange={onSelectItemMock}
-            />
-          </div>
-        )
+        const $el = mount(selectComponent({
+          mode: 'select',
+          items: ['foo', 'bar'],
+          onChange: onSelectItemMock,
+          searchable: false
+        }))
         expect($el.find('.jungle-select').first().hasClass('jungle-select-opened')).to.be.false
         expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.false
-        $el.find('.jungle-select .jungle-select-filter').first().simulate('click')
-        $el.find('.jungle-select').first().simulate('focus')
+        $el.find('.jungle-select-filter').first().simulate('click')
+        $el.simulate('focus')
         expect($el.find('.jungle-select').first().hasClass('jungle-select-opened')).to.be.true
         expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.true
-        $el.find('.outside-element').first().simulate('click')
-        console.log('el.html() : ', $el.html())
-        console.log('outside-element : ', $el.find('.outside-element').html())
+        $el.instance().getInstance().handleClickOutside()
+        $el.update()
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-opened')).to.be.false
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.false
+      })
+
+      test('remove focus state on click outside with searchable={true}', () => {
+        const onSelectItemMock = jest.fn()
+        const $el = mount(selectComponent({
+          mode: 'select',
+          items: ['foo', 'bar'],
+          onChange: onSelectItemMock,
+          searchable: true
+        }))
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-opened')).to.be.false
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.false
+        $el.find('.jungle-select-filter').first().simulate('click')
+        $el.simulate('focus')
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-opened')).to.be.true
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.true
+        $el.instance().getInstance().handleClickOutside()
+        $el.update()
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-opened')).to.be.false
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.false
+      })
+
+      test('remove jungle-select-focused class on tab or shift+tab', () => {
+        const onSelectItemMock = jest.fn()
+        const $el = mount(selectComponent({
+          mode: 'select',
+          items: ['foo', 'bar'],
+          onChange: onSelectItemMock
+        }))
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.false
+        $el.simulate('focus')
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.true
+        $el.instance().getInstance().onTab()
+        $el.update()
+        expect($el.find('.jungle-select').first().hasClass('jungle-select-focused')).to.be.false
       })
 
       test('selected item goes in a .jungle-select-selected-value element', () => {
@@ -1059,7 +1087,7 @@ describe('JungleSelect', () => {
         expect(onSelectItemMock.mock.calls.length).to.eq(0)
       })
 
-      test('should call onFocus after opening list and onBlur after closing', () => {
+      test('should call onFocus after focusing list and onBlur after blur', () => {
         const onFocusMock = jest.fn()
         const onBlurMock = jest.fn()
         const $el = mount(selectComponent({
@@ -1067,11 +1095,13 @@ describe('JungleSelect', () => {
           onBlur: onBlurMock,
           items: ['foo', 'bar']
         }))
-        $el.find('.jungle-select-filter').first().simulate('click')
+        $el.find('.jungle-select').first().simulate('focus')
         expect(onFocusMock.mock.calls.length).to.eq(1)
         expect(onBlurMock.mock.calls.length).to.eq(0)
-        $el.find('.jungle-select-filter').first().simulate('click')
+        $el.instance().getInstance().onTab()
+        $el.update()
         expect(onBlurMock.mock.calls.length).to.eq(1)
+        expect(onFocusMock.mock.calls.length).to.eq(1)
       })
 
       test('not render clear button if clearable is false', () => {
