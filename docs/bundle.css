@@ -398,6 +398,9 @@ a {
       box-shadow: none;
       border: none;
       outline: none; }
+.example-scroll-keyboard .jungle-select-list {
+  max-height: 300px;
+  overflow-y: scroll; }
 * {
   margin: 0;
   padding: 0; }
@@ -449,6 +452,3 @@ a {
       .main-navigation a.active:before {
         background: rgba(0, 0, 0, 0.08);
         transform: scaleX(1); }
-.example-scroll-keyboard .jungle-select-list {
-  max-height: 300px;
-  overflow-y: scroll; }

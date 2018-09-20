@@ -738,7 +738,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'onTab',
     value: function onTab() {
-      this.selectHighlightedItem();
+      if (this.listOpened()) {
+        this.selectHighlightedItem();
+      }
       this.onBlurFilter();
     }
   }, {
