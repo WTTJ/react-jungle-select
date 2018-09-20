@@ -551,7 +551,9 @@ class JungleSelect extends Component {
   }
 
   onTab() {
-    this.selectHighlightedItem()
+    if (this.listOpened()) {
+      this.selectHighlightedItem()
+    }
     this.onBlurFilter()
   }
 
