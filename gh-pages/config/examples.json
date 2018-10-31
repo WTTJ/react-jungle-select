@@ -75,6 +75,13 @@
     "description": "Select at least 2 items in order to see the behavior."
   },
   {
+    "id": "immutable-multiple-select",
+    "name": "Immutable Multi Select (List of Map)",
+    "js": "ImmutableMultipleSelect",
+    "json": "immutable-narcos",
+    "description": "Select at least 2 items in order to see the behavior."
+  },
+  {
     "id": "highlight-search",
     "name": "Highlight Search",
     "js": "HighlightSearch",
