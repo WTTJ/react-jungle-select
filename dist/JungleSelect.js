@@ -654,7 +654,7 @@ var JungleSelect = function (_Component) {
       return _react2.default.createElement(
         'div',
         { className: 'jungle-select-selected-values' },
-        selected.length > 0 && this.renderSelectedItems(selected),
+        (selected.length > 0 || selected.size > 0) && this.renderSelectedItems(selected),
         selected.length === 0 && placeholder && _react2.default.createElement(
           'div',
           { className: 'jungle-select-placeholder' },
@@ -690,7 +690,7 @@ var JungleSelect = function (_Component) {
 
       if (!selected) {
         return [];
-      } else if (Array.isArray(selected)) {
+      } else if (_immutable2.default.List.isList(selected) || Array.isArray(selected)) {
         return selected;
       } else {
         return [selected];
