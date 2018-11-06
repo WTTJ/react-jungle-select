@@ -259,7 +259,7 @@ class JungleSelect extends Component {
   }
 
   filteredItems(items) {
-    const { filterItem } = this.props
+    const { filterItems, filterItem } = this.props
     const { filter } = this.state
     let filtered = items
     this.highlights = Immutable.List(items.map(i => {
@@ -268,7 +268,11 @@ class JungleSelect extends Component {
       }
       return i
     }))
-    if (filter.length) {
+    if (filterItems) {
+      filtered = filterItems(items, filter, this.selectedItems())
+    }
+
+    if (!filterItems && filter.length) {
       if (filterItem) {
         filtered = items.filter((item, index) => filterItem(item, filter))
       } else {
@@ -713,6 +717,7 @@ JungleSelect.propTypes = {
 
   onChange: PropTypes.func,
   onFilter: PropTypes.func,
+  filterItems: PropTypes.func,
   filterItem: PropTypes.func
 }
 

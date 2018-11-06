@@ -366,7 +366,9 @@ var JungleSelect = function (_Component) {
     value: function filteredItems(items) {
       var _this2 = this;
 
-      var filterItem = this.props.filterItem;
+      var _props5 = this.props,
+          filterItems = _props5.filterItems,
+          filterItem = _props5.filterItem;
       var filter = this.state.filter;
 
       var filtered = items;
@@ -376,7 +378,11 @@ var JungleSelect = function (_Component) {
         }
         return i;
       }));
-      if (filter.length) {
+      if (filterItems) {
+        filtered = filterItems(items, filter, this.selectedItems());
+      }
+
+      if (!filterItems && filter.length) {
         if (filterItem) {
           filtered = items.filter(function (item, index) {
             return filterItem(item, filter);
@@ -463,10 +469,10 @@ var JungleSelect = function (_Component) {
     value: function renderList() {
       var _this3 = this;
 
-      var _props5 = this.props,
-          groups = _props5.groups,
-          renderGroup = _props5.renderGroup,
-          limit = _props5.limit;
+      var _props6 = this.props,
+          groups = _props6.groups,
+          renderGroup = _props6.renderGroup,
+          limit = _props6.limit;
       var sortedItems = this.state.sortedItems;
       var showAll = this.state.showAll;
 
@@ -665,9 +671,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderSelectedItems',
     value: function renderSelectedItems(items) {
-      var _props6 = this.props,
-          renderSelectedItem = _props6.renderSelectedItem,
-          renderItem = _props6.renderItem;
+      var _props7 = this.props,
+          renderSelectedItem = _props7.renderSelectedItem,
+          renderItem = _props7.renderItem;
 
       var renderFunction = renderSelectedItem || renderItem;
       return items.map(function (item, i) {
@@ -763,13 +769,13 @@ var JungleSelect = function (_Component) {
         'tab': this.onTab.bind(this),
         'shift+tab': this.onTab.bind(this)
       };
-      var _props7 = this.props,
-          searchable = _props7.searchable,
-          listWrapper = _props7.listWrapper,
-          classList = _props7.classList,
-          clearable = _props7.clearable,
-          mode = _props7.mode,
-          className = _props7.className;
+      var _props8 = this.props,
+          searchable = _props8.searchable,
+          listWrapper = _props8.listWrapper,
+          classList = _props8.classList,
+          clearable = _props8.clearable,
+          mode = _props8.mode,
+          className = _props8.className;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
@@ -884,6 +890,7 @@ JungleSelect.propTypes = {
 
   onChange: _propTypes2.default.func,
   onFilter: _propTypes2.default.func,
+  filterItems: _propTypes2.default.func,
   filterItem: _propTypes2.default.func
 };
 
