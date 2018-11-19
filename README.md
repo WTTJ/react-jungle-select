@@ -56,6 +56,7 @@ your list.
 | `focus` | `bool` | | `false` | Allows to handle the focus state of the filter input (`searchable={true}` only) |
 | `autofocus` | `bool` | | `false` | Focus state of the filter input on component mount. Deal with `focus` prop to handle the focus state. (`searchable={true}` only) |
 | `selectFirstItem` | `bool` | | `false` | Automatically highlights the first matching item on search results |
+| `remote` | `object` | | `null` | Fetch items from remote endpoint |
 
 ### Rendering props
 

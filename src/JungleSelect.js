@@ -230,9 +230,11 @@ class JungleSelect extends Component {
   }
 
   filter(e) {
-    const { onFilter, selectFirstItem } = this.props
+    const { onFilter, selectFirstItem, remote } = this.props
     let filter = e.target ? e.target.value : e
     if (onFilter) { onFilter(filter) }
+    if (remote) { this.fetchItems(filter) }
+
     this.setState({
       filter,
       highlighted: selectFirstItem ? 0 : null,
@@ -258,17 +260,57 @@ class JungleSelect extends Component {
     }
   }
 
+  fetchItems(filter) {
+    const { remote: { baseUrl, itemsId, queryParams, searchParam } } = this.props
+
+    let params = { [searchParam || 'q']: filter, ...queryParams }
+    let queryString = Object.entries(params).map((param) => {
+      return `${param[0]}=${param[1]}`
+    })
+    const url = `${baseUrl}?${queryString.join('&')}`
+
+    fetch(url).then((response) => {
+      return response.json()
+    }).then(response => {
+      const items = itemsId ? response[itemsId] : response
+      this.computeItems(this.highlightItems(Immutable.fromJS(items)), null)
+    }).catch((ex) => {
+      console.log(ex)
+      this.computeItems(Immutable.fromJS([{name: 'error remote'}]))
+    })
+  }
+
+  highlightItems(items) {
+    const { searchableAttributes } = this.props
+    if (!searchableAttributes) {
+      return items
+    }
+    this.highlights = items.map((item, index) => {
+      let matches = item
+      searchableAttributes.forEach(k => {
+        const key = Array.isArray(k) ? k : [k]
+        matches = matches.setIn(key, this.highlightFilterMatches(item.getIn(key)))
+      })
+      return matches
+    })
+
+    return items
+  }
+
   filteredItems(items) {
-    const { filterItem } = this.props
+    const { filterItem, remote } = this.props
     const { filter } = this.state
     let filtered = items
-    this.highlights = Immutable.List(items.map(i => {
-      if (typeof(i) === 'object' && !Immutable.Map.isMap(i)) {
-        return Immutable.Map(i)
-      }
-      return i
-    }))
-    if (filter.length) {
+    if (!remote) {
+      this.highlights = Immutable.List(items.map(i => {
+        if (typeof(i) === 'object' && !Immutable.Map.isMap(i)) {
+          return Immutable.Map(i)
+        }
+        return i
+      }))
+    }
+
+    if (filter.length && !remote) {
       if (filterItem) {
         filtered = items.filter((item, index) => filterItem(item, filter))
       } else {
@@ -431,6 +473,7 @@ class JungleSelect extends Component {
 
   renderItem(item, index) {
     const { renderItem } = this.props
+
     if (renderItem) {
       let highlightedItem = this.highlights.get(this.originalItemIndex(item))
       if (typeof(item) === 'object' && !Immutable.Map.isMap(item)) {
@@ -698,6 +741,12 @@ JungleSelect.propTypes = {
   autofocus: PropTypes.bool,
   selectFirstItem: PropTypes.bool,
   initialFilter: PropTypes.string,
+  remote: PropTypes.shape({
+    baseUrl: PropTypes.string.isRequired,
+    itemsId: PropTypes.string,
+    queryParams: PropTypes.object,
+    searchParam: PropTypes.string
+  }),
 
   classList: PropTypes.arrayOf(
     PropTypes.string

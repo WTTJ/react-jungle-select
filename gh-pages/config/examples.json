@@ -94,5 +94,12 @@
     "js": "ReduxForm",
     "json": "narcos",
     "description": "Last example to show you how well React-Jungle-Select integrates with ReduxForm and its callbaks (onChange, onFocus, onBlur)."
+  },
+  {
+    "id": "remote",
+    "name": "Remote items",
+    "js": "Remote",
+    "json": "narcos",
+    "description": "Last example to show you how well React-Jungle-Select integrates with ReduxForm and its callbaks (onChange, onFocus, onBlur)."
   }
 ]
