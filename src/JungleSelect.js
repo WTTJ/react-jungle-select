@@ -221,7 +221,7 @@ class JungleSelect extends Component {
     if (!searchableAttributes) {
       if (Immutable.Map.isMap(item)) {
         return item.keySeq().toArray()
-      } else if (typeof(item) === 'object') {
+      } else if (typeof item === 'object') {
         return Object.keys(item)
       }
       return []
@@ -315,7 +315,7 @@ class JungleSelect extends Component {
         filtered = items.filter((item, index) => filterItem(item, filter))
       } else {
         filtered = items.filter((item, index) => {
-          if (typeof(item) === 'string') {
+          if (typeof item === 'string') {
             let match = this.filterMethod(item)
             if (match) {
               this.highlights = this.highlights.set(index, this.highlightFilterMatches(item))
@@ -327,10 +327,19 @@ class JungleSelect extends Component {
               if (item.get('filterable') === false) { return true }
               let matches = item
               let matching = searchableAttributes.map(k => {
-                let match = this.filterMethod(item.get(k))
-                if (match) {
-                  matches = matches.set(k, this.highlightFilterMatches(item.get(k)))
-                  this.highlights = this.highlights.set(index, matches)
+                let match = false
+                if (Array.isArray(k)){
+                  match = this.filterMethod(item.getIn(k))
+                  if (match) {
+                    matches = matches.setIn(k, this.highlightFilterMatches(item.getIn(k)))
+                    this.highlights = this.highlights.set(index, matches)
+                  }
+                } else if (typeof k === 'string') {
+                  match = this.filterMethod(item.get(k))
+                  if (match) {
+                    matches = matches.set(k, this.highlightFilterMatches(item.get(k)))
+                    this.highlights = this.highlights.set(index, matches)
+                  }
                 }
                 return match
               }).some(b => b)
@@ -476,7 +485,7 @@ class JungleSelect extends Component {
 
     if (renderItem) {
       let highlightedItem = this.highlights.get(this.originalItemIndex(item))
-      if (typeof(item) === 'object' && !Immutable.Map.isMap(item)) {
+      if (typeof item === 'object' && !Immutable.Map.isMap(item)) {
         highlightedItem = highlightedItem.toJS()
       }
       return renderItem(item, index, highlightedItem)
@@ -775,7 +784,7 @@ JungleSelect.defaultProps = {
 }
 
 const sanitizeSearchString = (string) => {
-  if (typeof(string) !== 'string') {
+  if (typeof string !== 'string') {
     return ''
   }
   return removeDiacritics(string.toLowerCase().replace(/ +(?= )/g,'').trim())
