@@ -460,10 +460,19 @@ var JungleSelect = function (_Component) {
                 }
                 var matches = item;
                 var matching = searchableAttributes.map(function (k) {
-                  var match = _this4.filterMethod(item.get(k));
-                  if (match) {
-                    matches = matches.set(k, _this4.highlightFilterMatches(item.get(k)));
-                    _this4.highlights = _this4.highlights.set(index, matches);
+                  var match = false;
+                  if (Array.isArray(k)) {
+                    match = _this4.filterMethod(item.getIn(k));
+                    if (match) {
+                      matches = matches.setIn(k, _this4.highlightFilterMatches(item.getIn(k)));
+                      _this4.highlights = _this4.highlights.set(index, matches);
+                    }
+                  } else if (typeof k === 'string') {
+                    match = _this4.filterMethod(item.get(k));
+                    if (match) {
+                      matches = matches.set(k, _this4.highlightFilterMatches(item.get(k)));
+                      _this4.highlights = _this4.highlights.set(index, matches);
+                    }
                   }
                   return match;
                 }).some(function (b) {
@@ -935,6 +944,12 @@ JungleSelect.propTypes = {
   autofocus: _propTypes2.default.bool,
   selectFirstItem: _propTypes2.default.bool,
   initialFilter: _propTypes2.default.string,
+  remote: _propTypes2.default.shape({
+    baseUrl: _propTypes2.default.string.isRequired,
+    itemsId: _propTypes2.default.string,
+    queryParams: _propTypes2.default.object,
+    searchParam: _propTypes2.default.string
+  }),
 
   classList: _propTypes2.default.arrayOf(_propTypes2.default.string),
   placeholder: _propTypes2.default.string,
@@ -948,11 +963,7 @@ JungleSelect.propTypes = {
 
   onChange: _propTypes2.default.func,
   onFilter: _propTypes2.default.func,
-  filterItem: _propTypes2.default.func,
-  remote: _propTypes2.default.shape({
-    dataId: _propTypes2.default.string,
-    baseUrl: _propTypes2.default.string.isRequired
-  })
+  filterItem: _propTypes2.default.func
 };
 
 JungleSelect.defaultProps = {
