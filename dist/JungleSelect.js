@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -37,6 +39,8 @@ var _reactOnclickoutside2 = _interopRequireDefault(_reactOnclickoutside);
 var _diacritics = require('diacritics');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -329,12 +333,17 @@ var JungleSelect = function (_Component) {
     value: function filter(e) {
       var _props4 = this.props,
           onFilter = _props4.onFilter,
-          selectFirstItem = _props4.selectFirstItem;
+          selectFirstItem = _props4.selectFirstItem,
+          remote = _props4.remote;
 
       var filter = e.target ? e.target.value : e;
       if (onFilter) {
         onFilter(filter);
       }
+      if (remote) {
+        this.fetchItems(filter);
+      }
+
       this.setState({
         filter: filter,
         highlighted: selectFirstItem ? 0 : null,
@@ -362,21 +371,75 @@ var JungleSelect = function (_Component) {
       }
     }
   }, {
-    key: 'filteredItems',
-    value: function filteredItems(items) {
+    key: 'fetchItems',
+    value: function fetchItems(filter) {
       var _this2 = this;
 
-      var filterItem = this.props.filterItem;
+      var _props$remote = this.props.remote,
+          baseUrl = _props$remote.baseUrl,
+          itemsId = _props$remote.itemsId,
+          queryParams = _props$remote.queryParams,
+          searchParam = _props$remote.searchParam;
+
+
+      var params = _extends(_defineProperty({}, searchParam || 'q', filter), queryParams);
+      var queryString = Object.entries(params).map(function (param) {
+        return param[0] + '=' + param[1];
+      });
+      var url = baseUrl + '?' + queryString.join('&');
+
+      fetch(url).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        var items = itemsId ? response[itemsId] : response;
+        _this2.computeItems(_this2.highlightItems(_immutable2.default.fromJS(items)), null);
+      }).catch(function (ex) {
+        console.log(ex);
+        _this2.computeItems(_immutable2.default.fromJS([{ name: 'error remote' }]));
+      });
+    }
+  }, {
+    key: 'highlightItems',
+    value: function highlightItems(items) {
+      var _this3 = this;
+
+      var searchableAttributes = this.props.searchableAttributes;
+
+      if (!searchableAttributes) {
+        return items;
+      }
+      this.highlights = items.map(function (item, index) {
+        var matches = item;
+        searchableAttributes.forEach(function (k) {
+          var key = Array.isArray(k) ? k : [k];
+          matches = matches.setIn(key, _this3.highlightFilterMatches(item.getIn(key)));
+        });
+        return matches;
+      });
+
+      return items;
+    }
+  }, {
+    key: 'filteredItems',
+    value: function filteredItems(items) {
+      var _this4 = this;
+
+      var _props5 = this.props,
+          filterItem = _props5.filterItem,
+          remote = _props5.remote;
       var filter = this.state.filter;
 
       var filtered = items;
-      this.highlights = _immutable2.default.List(items.map(function (i) {
-        if ((typeof i === 'undefined' ? 'undefined' : _typeof(i)) === 'object' && !_immutable2.default.Map.isMap(i)) {
-          return _immutable2.default.Map(i);
-        }
-        return i;
-      }));
-      if (filter.length) {
+      if (!remote) {
+        this.highlights = _immutable2.default.List(items.map(function (i) {
+          if ((typeof i === 'undefined' ? 'undefined' : _typeof(i)) === 'object' && !_immutable2.default.Map.isMap(i)) {
+            return _immutable2.default.Map(i);
+          }
+          return i;
+        }));
+      }
+
+      if (filter.length && !remote) {
         if (filterItem) {
           filtered = items.filter(function (item, index) {
             return filterItem(item, filter);
@@ -384,23 +447,23 @@ var JungleSelect = function (_Component) {
         } else {
           filtered = items.filter(function (item, index) {
             if (typeof item === 'string') {
-              var match = _this2.filterMethod(item);
+              var match = _this4.filterMethod(item);
               if (match) {
-                _this2.highlights = _this2.highlights.set(index, _this2.highlightFilterMatches(item));
+                _this4.highlights = _this4.highlights.set(index, _this4.highlightFilterMatches(item));
               }
               return match;
             } else {
-              var searchableAttributes = _this2.searchableAttributes(item);
+              var searchableAttributes = _this4.searchableAttributes(item);
               if (_immutable2.default.Map.isMap(item)) {
                 if (item.get('filterable') === false) {
                   return true;
                 }
                 var matches = item;
                 var matching = searchableAttributes.map(function (k) {
-                  var match = _this2.filterMethod(item.get(k));
+                  var match = _this4.filterMethod(item.get(k));
                   if (match) {
-                    matches = matches.set(k, _this2.highlightFilterMatches(item.get(k)));
-                    _this2.highlights = _this2.highlights.set(index, matches);
+                    matches = matches.set(k, _this4.highlightFilterMatches(item.get(k)));
+                    _this4.highlights = _this4.highlights.set(index, matches);
                   }
                   return match;
                 }).some(function (b) {
@@ -413,10 +476,10 @@ var JungleSelect = function (_Component) {
                 }
                 var _matches = _immutable2.default.fromJS(item);
                 var _matching = searchableAttributes.map(function (k) {
-                  var match = _this2.filterMethod(item[k]);
+                  var match = _this4.filterMethod(item[k]);
                   if (match) {
-                    _matches = _matches.set(k, _this2.highlightFilterMatches(item[k]));
-                    _this2.highlights = _this2.highlights.set(index, _matches);
+                    _matches = _matches.set(k, _this4.highlightFilterMatches(item[k]));
+                    _this4.highlights = _this4.highlights.set(index, _matches);
                   }
                   return match;
                 }).some(function (b) {
@@ -461,19 +524,19 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderList',
     value: function renderList() {
-      var _this3 = this;
+      var _this5 = this;
 
-      var _props5 = this.props,
-          groups = _props5.groups,
-          renderGroup = _props5.renderGroup,
-          limit = _props5.limit;
+      var _props6 = this.props,
+          groups = _props6.groups,
+          renderGroup = _props6.renderGroup,
+          limit = _props6.limit;
       var sortedItems = this.state.sortedItems;
       var showAll = this.state.showAll;
 
       var counter = -1;
       if (groups) {
         return groups.map(function (group, groupIndex) {
-          var groupItems = _this3.filteredItems(_this3.itemsForGroup(group));
+          var groupItems = _this5.filteredItems(_this5.itemsForGroup(group));
           return _react2.default.createElement(
             'section',
             {
@@ -490,7 +553,7 @@ var JungleSelect = function (_Component) {
               null,
               groupItems.map(function (item, itemIndex) {
                 counter = counter + 1;
-                return _this3.renderInternalItem(item, counter);
+                return _this5.renderInternalItem(item, counter);
               })
             )
           );
@@ -508,7 +571,7 @@ var JungleSelect = function (_Component) {
           null,
           limited.map(function (item, itemIndex) {
             counter = counter + 1;
-            return _this3.renderInternalItem(item, counter);
+            return _this5.renderInternalItem(item, counter);
           }),
           (limitedSize < filteredSize || showAll && limitedSize > limit) && this.renderShowAll(showAll, this.toggleShowAll.bind(this))
         );
@@ -517,7 +580,7 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderInternalItem',
     value: function renderInternalItem(item, index) {
-      var _this4 = this;
+      var _this6 = this;
 
       var selected = this.selectedItems();
       var highlighted = this.state.highlighted;
@@ -531,7 +594,7 @@ var JungleSelect = function (_Component) {
           onClick: this.onChange.bind(this, item),
           key: index,
           ref: function ref(e) {
-            return _this4.itemElements[index] = e;
+            return _this6.itemElements[index] = e;
           },
           className: classNames.join(' '),
           onMouseEnter: this.highlightItem.bind(this, item, false),
@@ -563,7 +626,7 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'highlightFilterMatches',
     value: function highlightFilterMatches(text) {
-      var _this5 = this;
+      var _this7 = this;
 
       var filter = this.state.filter;
 
@@ -571,7 +634,7 @@ var JungleSelect = function (_Component) {
         if (l === '|') {
           return '|';
         }
-        return _this5.letterToDiacritics[l] ? '[' + (l + _this5.letterToDiacritics[l]) + ']' : l;
+        return _this7.letterToDiacritics[l] ? '[' + (l + _this7.letterToDiacritics[l]) + ']' : l;
       }).join('');
       if (regexedFilter === '') return text;
       var regex = new RegExp(regexedFilter, 'gi');
@@ -582,6 +645,7 @@ var JungleSelect = function (_Component) {
     key: 'renderItem',
     value: function renderItem(item, index) {
       var renderItem = this.props.renderItem;
+
 
       if (renderItem) {
         var highlightedItem = this.highlights.get(this.originalItemIndex(item));
@@ -665,9 +729,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderSelectedItems',
     value: function renderSelectedItems(items) {
-      var _props6 = this.props,
-          renderSelectedItem = _props6.renderSelectedItem,
-          renderItem = _props6.renderItem;
+      var _props7 = this.props,
+          renderSelectedItem = _props7.renderSelectedItem,
+          renderItem = _props7.renderItem;
 
       var renderFunction = renderSelectedItem || renderItem;
       return items.map(function (item, i) {
@@ -747,7 +811,7 @@ var JungleSelect = function (_Component) {
     key: 'render',
     value: function render() {
       var _context,
-          _this6 = this;
+          _this8 = this;
 
       var keyMap = {
         'up': 'up',
@@ -763,13 +827,13 @@ var JungleSelect = function (_Component) {
         'tab': this.onTab.bind(this),
         'shift+tab': this.onTab.bind(this)
       };
-      var _props7 = this.props,
-          searchable = _props7.searchable,
-          listWrapper = _props7.listWrapper,
-          classList = _props7.classList,
-          clearable = _props7.clearable,
-          mode = _props7.mode,
-          className = _props7.className;
+      var _props8 = this.props,
+          searchable = _props8.searchable,
+          listWrapper = _props8.listWrapper,
+          classList = _props8.classList,
+          clearable = _props8.clearable,
+          mode = _props8.mode,
+          className = _props8.className;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
@@ -790,7 +854,7 @@ var JungleSelect = function (_Component) {
         _reactHotkeys.HotKeys,
         {
           ref: function ref(e) {
-            return _this6.container = e;
+            return _this8.container = e;
           },
           keyMap: keyMap,
           handlers: handlers,
@@ -818,7 +882,7 @@ var JungleSelect = function (_Component) {
                 this.displayPlaceholderOrValue(),
                 searchable && _react2.default.createElement('input', {
                   ref: function ref(e) {
-                    return _this6.filterInput = e;
+                    return _this8.filterInput = e;
                   },
                   value: filter,
                   onChange: this.filter.bind(this),
@@ -840,7 +904,7 @@ var JungleSelect = function (_Component) {
             {
               className: 'jungle-select-list',
               ref: function ref(e) {
-                return _this6.itemsContainer = e;
+                return _this8.itemsContainer = e;
               }
             },
             listWrapper && listWrapper(this.renderList()),
@@ -884,7 +948,11 @@ JungleSelect.propTypes = {
 
   onChange: _propTypes2.default.func,
   onFilter: _propTypes2.default.func,
-  filterItem: _propTypes2.default.func
+  filterItem: _propTypes2.default.func,
+  remote: _propTypes2.default.shape({
+    dataId: _propTypes2.default.string,
+    baseUrl: _propTypes2.default.string.isRequired
+  })
 };
 
 JungleSelect.defaultProps = {
