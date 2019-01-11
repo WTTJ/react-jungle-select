@@ -261,7 +261,7 @@ class JungleSelect extends Component {
   }
 
   fetchItems(filter) {
-    const { remote: { baseUrl, itemsId, queryParams, searchParam } } = this.props
+    const { remote: { baseUrl, itemsId, queryParams, searchParam }, searchableAttributes } = this.props
 
     let params = { [searchParam || 'q']: filter, ...queryParams }
     let queryString = Object.entries(params).map((param) => {
@@ -272,8 +272,12 @@ class JungleSelect extends Component {
     fetch(url).then((response) => {
       return response.json()
     }).then(response => {
-      const items = itemsId ? response[itemsId] : response
-      this.computeItems(this.highlightItems(Immutable.fromJS(items)), null)
+      let items = Immutable.fromJS(itemsId ? response[itemsId] : response)
+      searchableAttributes.forEach(k => {
+        const key = Array.isArray(k) ? k : [k]
+        items = items.filter(item => item.getIn(key))
+      })
+      this.computeItems(this.highlightItems(items), null)
     }).catch((ex) => {
       console.log(ex)
       this.computeItems(Immutable.fromJS([{name: 'error remote'}]))
