@@ -375,11 +375,13 @@ var JungleSelect = function (_Component) {
     value: function fetchItems(filter) {
       var _this2 = this;
 
-      var _props$remote = this.props.remote,
-          baseUrl = _props$remote.baseUrl,
-          itemsId = _props$remote.itemsId,
-          queryParams = _props$remote.queryParams,
-          searchParam = _props$remote.searchParam;
+      var _props5 = this.props,
+          _props5$remote = _props5.remote,
+          baseUrl = _props5$remote.baseUrl,
+          itemsId = _props5$remote.itemsId,
+          queryParams = _props5$remote.queryParams,
+          searchParam = _props5$remote.searchParam,
+          searchableAttributes = _props5.searchableAttributes;
 
 
       var params = _extends(_defineProperty({}, searchParam || 'q', filter), queryParams);
@@ -391,8 +393,14 @@ var JungleSelect = function (_Component) {
       fetch(url).then(function (response) {
         return response.json();
       }).then(function (response) {
-        var items = itemsId ? response[itemsId] : response;
-        _this2.computeItems(_this2.highlightItems(_immutable2.default.fromJS(items)), null);
+        var items = _immutable2.default.fromJS(itemsId ? response[itemsId] : response);
+        searchableAttributes.forEach(function (k) {
+          var key = Array.isArray(k) ? k : [k];
+          items = items.filter(function (item) {
+            return item.getIn(key);
+          });
+        });
+        _this2.computeItems(_this2.highlightItems(items), null);
       }).catch(function (ex) {
         console.log(ex);
         _this2.computeItems(_immutable2.default.fromJS([{ name: 'error remote' }]));
@@ -424,9 +432,9 @@ var JungleSelect = function (_Component) {
     value: function filteredItems(items) {
       var _this4 = this;
 
-      var _props5 = this.props,
-          filterItem = _props5.filterItem,
-          remote = _props5.remote;
+      var _props6 = this.props,
+          filterItem = _props6.filterItem,
+          remote = _props6.remote;
       var filter = this.state.filter;
 
       var filtered = items;
@@ -535,10 +543,10 @@ var JungleSelect = function (_Component) {
     value: function renderList() {
       var _this5 = this;
 
-      var _props6 = this.props,
-          groups = _props6.groups,
-          renderGroup = _props6.renderGroup,
-          limit = _props6.limit;
+      var _props7 = this.props,
+          groups = _props7.groups,
+          renderGroup = _props7.renderGroup,
+          limit = _props7.limit;
       var sortedItems = this.state.sortedItems;
       var showAll = this.state.showAll;
 
@@ -738,9 +746,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderSelectedItems',
     value: function renderSelectedItems(items) {
-      var _props7 = this.props,
-          renderSelectedItem = _props7.renderSelectedItem,
-          renderItem = _props7.renderItem;
+      var _props8 = this.props,
+          renderSelectedItem = _props8.renderSelectedItem,
+          renderItem = _props8.renderItem;
 
       var renderFunction = renderSelectedItem || renderItem;
       return items.map(function (item, i) {
@@ -836,13 +844,13 @@ var JungleSelect = function (_Component) {
         'tab': this.onTab.bind(this),
         'shift+tab': this.onTab.bind(this)
       };
-      var _props8 = this.props,
-          searchable = _props8.searchable,
-          listWrapper = _props8.listWrapper,
-          classList = _props8.classList,
-          clearable = _props8.clearable,
-          mode = _props8.mode,
-          className = _props8.className;
+      var _props9 = this.props,
+          searchable = _props9.searchable,
+          listWrapper = _props9.listWrapper,
+          classList = _props9.classList,
+          clearable = _props9.clearable,
+          mode = _props9.mode,
+          className = _props9.className;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
