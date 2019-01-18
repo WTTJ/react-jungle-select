@@ -71,7 +71,7 @@ var JungleSelect = function (_Component) {
     };
 
     _this.itemElements = [];
-    _this.highlights = [];
+    _this.highlights = _immutable2.default.List();
     _this.letterToDiacritics = {};
     _diacritics.replacementList.forEach(function (c) {
       return _this.letterToDiacritics[c.base] = c.chars;
@@ -412,7 +412,11 @@ var JungleSelect = function (_Component) {
         var matches = item;
         searchableAttributes.forEach(function (k) {
           var key = Array.isArray(k) ? k : [k];
-          matches = matches.setIn(key, _this3.highlightFilterMatches(item.getIn(key)));
+          var text = item.getIn(key);
+          if (!text) {
+            text = '';
+          }
+          matches = matches.setIn(key, _this3.highlightFilterMatches(text));
         });
         return matches;
       });

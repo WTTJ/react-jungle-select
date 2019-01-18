@@ -24,7 +24,7 @@ class JungleSelect extends Component {
     }
     super(props)
     this.itemElements = []
-    this.highlights = []
+    this.highlights = Immutable.List()
     this.letterToDiacritics = {}
     replacementList.forEach(c => this.letterToDiacritics[c.base] = c.chars)
   }
@@ -289,7 +289,11 @@ class JungleSelect extends Component {
       let matches = item
       searchableAttributes.forEach(k => {
         const key = Array.isArray(k) ? k : [k]
-        matches = matches.setIn(key, this.highlightFilterMatches(item.getIn(key)))
+        let text = item.getIn(key)
+        if (!text) {
+          text = ''
+        }
+        matches = matches.setIn(key, this.highlightFilterMatches(text))
       })
       return matches
     })
