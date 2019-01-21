@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -37,6 +37,10 @@ var _reactOnclickoutside = require('react-onclickoutside');
 var _reactOnclickoutside2 = _interopRequireDefault(_reactOnclickoutside);
 
 var _diacritics = require('diacritics');
+
+var _debounce = require('lodash/debounce');
+
+var _debounce2 = _interopRequireDefault(_debounce);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -69,6 +73,38 @@ var JungleSelect = function (_Component) {
       focused: false,
       sortedItems: []
     };
+    _this.fetchItems = (0, _debounce2.default)(function (filter) {
+      var _this$props = _this.props,
+          _this$props$remote = _this$props.remote,
+          baseUrl = _this$props$remote.baseUrl,
+          itemsId = _this$props$remote.itemsId,
+          queryParams = _this$props$remote.queryParams,
+          searchParam = _this$props$remote.searchParam,
+          searchableAttributes = _this$props.searchableAttributes;
+
+
+      var params = _extends(_defineProperty({}, searchParam || 'q', filter), queryParams);
+      var queryString = Object.entries(params).map(function (param) {
+        return param[0] + '=' + param[1];
+      });
+      var url = baseUrl + '?' + queryString.join('&');
+
+      fetch(url).then(function (response) {
+        return response.json();
+      }).then(function (response) {
+        var items = _immutable2.default.fromJS(itemsId ? response[itemsId] : response);
+        searchableAttributes.forEach(function (k) {
+          var key = Array.isArray(k) ? k : [k];
+          items = items.filter(function (item) {
+            return item.getIn(key);
+          });
+        });
+        _this.computeItems(_this.highlightItems(items), null);
+      }).catch(function (ex) {
+        console.log(ex);
+        _this.computeItems(_immutable2.default.fromJS([{ name: 'error remote' }]));
+      });
+    }, 500);
 
     _this.itemElements = [];
     _this.highlights = [];
@@ -340,6 +376,7 @@ var JungleSelect = function (_Component) {
       if (onFilter) {
         onFilter(filter);
       }
+      console.error("updated?");
       if (remote) {
         this.fetchItems(filter);
       }
@@ -371,45 +408,9 @@ var JungleSelect = function (_Component) {
       }
     }
   }, {
-    key: 'fetchItems',
-    value: function fetchItems(filter) {
-      var _this2 = this;
-
-      var _props5 = this.props,
-          _props5$remote = _props5.remote,
-          baseUrl = _props5$remote.baseUrl,
-          itemsId = _props5$remote.itemsId,
-          queryParams = _props5$remote.queryParams,
-          searchParam = _props5$remote.searchParam,
-          searchableAttributes = _props5.searchableAttributes;
-
-
-      var params = _extends(_defineProperty({}, searchParam || 'q', filter), queryParams);
-      var queryString = Object.entries(params).map(function (param) {
-        return param[0] + '=' + param[1];
-      });
-      var url = baseUrl + '?' + queryString.join('&');
-
-      fetch(url).then(function (response) {
-        return response.json();
-      }).then(function (response) {
-        var items = _immutable2.default.fromJS(itemsId ? response[itemsId] : response);
-        searchableAttributes.forEach(function (k) {
-          var key = Array.isArray(k) ? k : [k];
-          items = items.filter(function (item) {
-            return item.getIn(key);
-          });
-        });
-        _this2.computeItems(_this2.highlightItems(items), null);
-      }).catch(function (ex) {
-        console.log(ex);
-        _this2.computeItems(_immutable2.default.fromJS([{ name: 'error remote' }]));
-      });
-    }
-  }, {
     key: 'highlightItems',
     value: function highlightItems(items) {
-      var _this3 = this;
+      var _this2 = this;
 
       var searchableAttributes = this.props.searchableAttributes;
 
@@ -420,7 +421,7 @@ var JungleSelect = function (_Component) {
         var matches = item;
         searchableAttributes.forEach(function (k) {
           var key = Array.isArray(k) ? k : [k];
-          matches = matches.setIn(key, _this3.highlightFilterMatches(item.getIn(key)));
+          matches = matches.setIn(key, _this2.highlightFilterMatches(item.getIn(key)));
         });
         return matches;
       });
@@ -430,11 +431,11 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'filteredItems',
     value: function filteredItems(items) {
-      var _this4 = this;
+      var _this3 = this;
 
-      var _props6 = this.props,
-          filterItem = _props6.filterItem,
-          remote = _props6.remote;
+      var _props5 = this.props,
+          filterItem = _props5.filterItem,
+          remote = _props5.remote;
       var filter = this.state.filter;
 
       var filtered = items;
@@ -455,13 +456,13 @@ var JungleSelect = function (_Component) {
         } else {
           filtered = items.filter(function (item, index) {
             if (typeof item === 'string') {
-              var match = _this4.filterMethod(item);
+              var match = _this3.filterMethod(item);
               if (match) {
-                _this4.highlights = _this4.highlights.set(index, _this4.highlightFilterMatches(item));
+                _this3.highlights = _this3.highlights.set(index, _this3.highlightFilterMatches(item));
               }
               return match;
             } else {
-              var searchableAttributes = _this4.searchableAttributes(item);
+              var searchableAttributes = _this3.searchableAttributes(item);
               if (_immutable2.default.Map.isMap(item)) {
                 if (item.get('filterable') === false) {
                   return true;
@@ -470,16 +471,16 @@ var JungleSelect = function (_Component) {
                 var matching = searchableAttributes.map(function (k) {
                   var match = false;
                   if (Array.isArray(k)) {
-                    match = _this4.filterMethod(item.getIn(k));
+                    match = _this3.filterMethod(item.getIn(k));
                     if (match) {
-                      matches = matches.setIn(k, _this4.highlightFilterMatches(item.getIn(k)));
-                      _this4.highlights = _this4.highlights.set(index, matches);
+                      matches = matches.setIn(k, _this3.highlightFilterMatches(item.getIn(k)));
+                      _this3.highlights = _this3.highlights.set(index, matches);
                     }
                   } else if (typeof k === 'string') {
-                    match = _this4.filterMethod(item.get(k));
+                    match = _this3.filterMethod(item.get(k));
                     if (match) {
-                      matches = matches.set(k, _this4.highlightFilterMatches(item.get(k)));
-                      _this4.highlights = _this4.highlights.set(index, matches);
+                      matches = matches.set(k, _this3.highlightFilterMatches(item.get(k)));
+                      _this3.highlights = _this3.highlights.set(index, matches);
                     }
                   }
                   return match;
@@ -493,10 +494,10 @@ var JungleSelect = function (_Component) {
                 }
                 var _matches = _immutable2.default.fromJS(item);
                 var _matching = searchableAttributes.map(function (k) {
-                  var match = _this4.filterMethod(item[k]);
+                  var match = _this3.filterMethod(item[k]);
                   if (match) {
-                    _matches = _matches.set(k, _this4.highlightFilterMatches(item[k]));
-                    _this4.highlights = _this4.highlights.set(index, _matches);
+                    _matches = _matches.set(k, _this3.highlightFilterMatches(item[k]));
+                    _this3.highlights = _this3.highlights.set(index, _matches);
                   }
                   return match;
                 }).some(function (b) {
@@ -541,19 +542,19 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderList',
     value: function renderList() {
-      var _this5 = this;
+      var _this4 = this;
 
-      var _props7 = this.props,
-          groups = _props7.groups,
-          renderGroup = _props7.renderGroup,
-          limit = _props7.limit;
+      var _props6 = this.props,
+          groups = _props6.groups,
+          renderGroup = _props6.renderGroup,
+          limit = _props6.limit;
       var sortedItems = this.state.sortedItems;
       var showAll = this.state.showAll;
 
       var counter = -1;
       if (groups) {
         return groups.map(function (group, groupIndex) {
-          var groupItems = _this5.filteredItems(_this5.itemsForGroup(group));
+          var groupItems = _this4.filteredItems(_this4.itemsForGroup(group));
           return _react2.default.createElement(
             'section',
             {
@@ -570,7 +571,7 @@ var JungleSelect = function (_Component) {
               null,
               groupItems.map(function (item, itemIndex) {
                 counter = counter + 1;
-                return _this5.renderInternalItem(item, counter);
+                return _this4.renderInternalItem(item, counter);
               })
             )
           );
@@ -588,7 +589,7 @@ var JungleSelect = function (_Component) {
           null,
           limited.map(function (item, itemIndex) {
             counter = counter + 1;
-            return _this5.renderInternalItem(item, counter);
+            return _this4.renderInternalItem(item, counter);
           }),
           (limitedSize < filteredSize || showAll && limitedSize > limit) && this.renderShowAll(showAll, this.toggleShowAll.bind(this))
         );
@@ -597,7 +598,7 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderInternalItem',
     value: function renderInternalItem(item, index) {
-      var _this6 = this;
+      var _this5 = this;
 
       var selected = this.selectedItems();
       var highlighted = this.state.highlighted;
@@ -611,7 +612,7 @@ var JungleSelect = function (_Component) {
           onClick: this.onChange.bind(this, item),
           key: index,
           ref: function ref(e) {
-            return _this6.itemElements[index] = e;
+            return _this5.itemElements[index] = e;
           },
           className: classNames.join(' '),
           onMouseEnter: this.highlightItem.bind(this, item, false),
@@ -643,7 +644,7 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'highlightFilterMatches',
     value: function highlightFilterMatches(text) {
-      var _this7 = this;
+      var _this6 = this;
 
       var filter = this.state.filter;
 
@@ -651,7 +652,7 @@ var JungleSelect = function (_Component) {
         if (l === '|') {
           return '|';
         }
-        return _this7.letterToDiacritics[l] ? '[' + (l + _this7.letterToDiacritics[l]) + ']' : l;
+        return _this6.letterToDiacritics[l] ? '[' + (l + _this6.letterToDiacritics[l]) + ']' : l;
       }).join('');
       if (regexedFilter === '') return text;
       var regex = new RegExp(regexedFilter, 'gi');
@@ -746,9 +747,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderSelectedItems',
     value: function renderSelectedItems(items) {
-      var _props8 = this.props,
-          renderSelectedItem = _props8.renderSelectedItem,
-          renderItem = _props8.renderItem;
+      var _props7 = this.props,
+          renderSelectedItem = _props7.renderSelectedItem,
+          renderItem = _props7.renderItem;
 
       var renderFunction = renderSelectedItem || renderItem;
       return items.map(function (item, i) {
@@ -828,7 +829,7 @@ var JungleSelect = function (_Component) {
     key: 'render',
     value: function render() {
       var _context,
-          _this8 = this;
+          _this7 = this;
 
       var keyMap = {
         'up': 'up',
@@ -844,13 +845,13 @@ var JungleSelect = function (_Component) {
         'tab': this.onTab.bind(this),
         'shift+tab': this.onTab.bind(this)
       };
-      var _props9 = this.props,
-          searchable = _props9.searchable,
-          listWrapper = _props9.listWrapper,
-          classList = _props9.classList,
-          clearable = _props9.clearable,
-          mode = _props9.mode,
-          className = _props9.className;
+      var _props8 = this.props,
+          searchable = _props8.searchable,
+          listWrapper = _props8.listWrapper,
+          classList = _props8.classList,
+          clearable = _props8.clearable,
+          mode = _props8.mode,
+          className = _props8.className;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
@@ -871,7 +872,7 @@ var JungleSelect = function (_Component) {
         _reactHotkeys.HotKeys,
         {
           ref: function ref(e) {
-            return _this8.container = e;
+            return _this7.container = e;
           },
           keyMap: keyMap,
           handlers: handlers,
@@ -899,7 +900,7 @@ var JungleSelect = function (_Component) {
                 this.displayPlaceholderOrValue(),
                 searchable && _react2.default.createElement('input', {
                   ref: function ref(e) {
-                    return _this8.filterInput = e;
+                    return _this7.filterInput = e;
                   },
                   value: filter,
                   onChange: this.filter.bind(this),
@@ -921,7 +922,7 @@ var JungleSelect = function (_Component) {
             {
               className: 'jungle-select-list',
               ref: function ref(e) {
-                return _this8.itemsContainer = e;
+                return _this7.itemsContainer = e;
               }
             },
             listWrapper && listWrapper(this.renderList()),

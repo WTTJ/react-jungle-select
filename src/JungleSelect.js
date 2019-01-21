@@ -6,6 +6,7 @@ import { HotKeys } from 'react-hotkeys'
 import Immutable from 'immutable'
 import onClickOutside from 'react-onclickoutside'
 import { remove as removeDiacritics, replacementList } from 'diacritics'
+import debounce from 'lodash/debounce'
 
 class JungleSelect extends Component {
   state = {
@@ -260,7 +261,7 @@ class JungleSelect extends Component {
     }
   }
 
-  fetchItems(filter) {
+  fetchItems = debounce((filter) => {
     const { remote: { baseUrl, itemsId, queryParams, searchParam }, searchableAttributes } = this.props
 
     let params = { [searchParam || 'q']: filter, ...queryParams }
@@ -282,7 +283,7 @@ class JungleSelect extends Component {
       console.log(ex)
       this.computeItems(Immutable.fromJS([{name: 'error remote'}]))
     })
-  }
+  }, 500)
 
   highlightItems(items) {
     const { searchableAttributes } = this.props
