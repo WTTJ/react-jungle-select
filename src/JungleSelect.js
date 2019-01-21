@@ -390,7 +390,7 @@ class JungleSelect extends Component {
   }
 
   renderList() {
-    const { groups, renderGroup, limit } = this.props
+    const { groups, renderGroup, limit, additionalItem } = this.props
     const { sortedItems } = this.state
     const { showAll } = this.state
     let counter = -1
@@ -424,6 +424,7 @@ class JungleSelect extends Component {
             counter = counter + 1
             return this.renderInternalItem(item, counter)
           })}
+          {additionalItem && additionalItem}
           {(limitedSize < filteredSize || (showAll && limitedSize > limit )) &&
             this.renderShowAll(showAll, ::this.toggleShowAll)
           }
@@ -771,6 +772,7 @@ JungleSelect.propTypes = {
   renderSelectedItem: PropTypes.func,
   renderShowAll: PropTypes.func,
   listWrapper: PropTypes.func,
+  additionalItem: PropTypes.node,
   clearNode: PropTypes.node,
   label: PropTypes.node,
 

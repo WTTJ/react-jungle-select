@@ -67,6 +67,7 @@ your list.
 | `renderItem` | `func` | :warning: required if your items are objects | | Lets you customize the items as you need. The item is passed as first argument, the item's index from the items list as second argument and the highlightedItem as third argument|
 | `renderGroup` | `func` | :warning: required if you use groups | | Lets you customize the groups as you need. group and matching items are passed as arguments|
 | `renderSelectedItem` | `func` | | | Lets you customize the selected item. item is passed as an argument |
+| `additionalItem` | `node` | | | Lets you add an additonal item (at the end) (i.e: A link to create a new item) |
 | `clearNode` | `node` | | `×` | Lets you customize the button that clears the selected value |
 | `label` | `node` | | | Adds a label for your jungle-select |
 | `renderShowAll` | `func` | | | Lets you customize the 'More / Less' button. It takes 2 arguments, a boolean indicating if the list is expanded or not, and the callback to toggle expand status |
