@@ -376,7 +376,6 @@ var JungleSelect = function (_Component) {
       if (onFilter) {
         onFilter(filter);
       }
-      console.error("updated?");
       if (remote) {
         this.fetchItems(filter);
       }
