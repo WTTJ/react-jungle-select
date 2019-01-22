@@ -852,7 +852,8 @@ var JungleSelect = function (_Component) {
           classList = _props8.classList,
           clearable = _props8.clearable,
           mode = _props8.mode,
-          className = _props8.className;
+          className = _props8.className,
+          iconNode = _props8.iconNode;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
@@ -906,7 +907,8 @@ var JungleSelect = function (_Component) {
                   value: filter,
                   onChange: this.filter.bind(this),
                   autoComplete: 'disabled'
-                })
+                }),
+                iconNode && iconNode
               )
             ),
             (filter.length || selected.length !== 0 && clearable) && _react2.default.createElement(
@@ -970,6 +972,7 @@ JungleSelect.propTypes = {
   listWrapper: _propTypes2.default.func,
   additionalItem: _propTypes2.default.node,
   clearNode: _propTypes2.default.node,
+  iconNode: _propTypes2.default.node,
   label: _propTypes2.default.node,
 
   onChange: _propTypes2.default.func,

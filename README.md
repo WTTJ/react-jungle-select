@@ -69,6 +69,7 @@ your list.
 | `renderSelectedItem` | `func` | | | Lets you customize the selected item. item is passed as an argument |
 | `additionalItem` | `node` | | | Lets you add an additonal item (at the end) (i.e: A link to create a new item) |
 | `clearNode` | `node` | | `×` | Lets you customize the button that clears the selected value |
+| `iconNode` | `node` | | | Allows you to add a node at the end of the .jungle-select-filter (select mode or searchable true) |
 | `label` | `node` | | | Adds a label for your jungle-select |
 | `renderShowAll` | `func` | | | Lets you customize the 'More / Less' button. It takes 2 arguments, a boolean indicating if the list is expanded or not, and the callback to toggle expand status |
 | `listWrapper` | `func` | | | Adds a wrapper tag around your list items (`.jungle-select-item`) or around your groups if you use groups (`.jungle-select-group`). The items or group nodes are passed as an argument. It can be used to add a [CSSTransitionGroup](https://github.com/reactjs/react-transition-group#high-level-api-csstransitiongroup) element to animate the opening list. |
@@ -165,3 +166,4 @@ Then open [`localhost:9090`](http://localhost:9090) in a browser.
 4. Commit your changes (`git commit -am 'Add some feature'`)
 5. Publish the branch (`git push origin my-new-feature`)
 6. Create a new Pull Request
+
