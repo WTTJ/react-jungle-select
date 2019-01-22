@@ -631,7 +631,7 @@ class JungleSelect extends Component {
       'shift+tab': ::this.onTab
     }
     const {
-      searchable, listWrapper, classList, clearable, mode, className
+      searchable, listWrapper, classList, clearable, mode, className, iconNode
     } = this.props
     const { filter, focused } = this.state
     const selected = this.selectedItems()
@@ -673,6 +673,7 @@ class JungleSelect extends Component {
                       autoComplete='disabled'
                     />
                   }
+                  {iconNode && iconNode}
                 </a>
               </div>
             }
@@ -774,6 +775,7 @@ JungleSelect.propTypes = {
   listWrapper: PropTypes.func,
   additionalItem: PropTypes.node,
   clearNode: PropTypes.node,
+  iconNode: PropTypes.node,
   label: PropTypes.node,
 
   onChange: PropTypes.func,
