@@ -546,7 +546,8 @@ var JungleSelect = function (_Component) {
       var _props6 = this.props,
           groups = _props6.groups,
           renderGroup = _props6.renderGroup,
-          limit = _props6.limit;
+          limit = _props6.limit,
+          additionalItem = _props6.additionalItem;
       var sortedItems = this.state.sortedItems;
       var showAll = this.state.showAll;
 
@@ -590,6 +591,7 @@ var JungleSelect = function (_Component) {
             counter = counter + 1;
             return _this4.renderInternalItem(item, counter);
           }),
+          additionalItem && additionalItem,
           (limitedSize < filteredSize || showAll && limitedSize > limit) && this.renderShowAll(showAll, this.toggleShowAll.bind(this))
         );
       }
@@ -966,6 +968,7 @@ JungleSelect.propTypes = {
   renderSelectedItem: _propTypes2.default.func,
   renderShowAll: _propTypes2.default.func,
   listWrapper: _propTypes2.default.func,
+  additionalItem: _propTypes2.default.node,
   clearNode: _propTypes2.default.node,
   label: _propTypes2.default.node,
 
