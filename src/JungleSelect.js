@@ -137,7 +137,7 @@ class JungleSelect extends Component {
   }
 
   itemsCount() {
-    const { sortedItems } = this.state
+    const { sortedItems} = this.state
     let list = this.filteredItems(sortedItems)
     if (Immutable.List.isList(list)) {
       return list.size
@@ -239,7 +239,7 @@ class JungleSelect extends Component {
     this.setState({
       filter,
       highlighted: selectFirstItem ? 0 : null,
-      listOpened: filter && filter.length
+      listOpened: filter && filter.length && !remote
     })
   }
 
@@ -262,7 +262,7 @@ class JungleSelect extends Component {
   }
 
   fetchItems = debounce((filter) => {
-    const { remote: { baseUrl, itemsId, queryParams, searchParam }, searchableAttributes } = this.props
+    const { remote: { baseUrl, itemsId, queryParams, searchParam }, searchableAttributes, additionalItem } = this.props
 
     let params = { [searchParam || 'q']: filter, ...queryParams }
     let queryString = Object.entries(params).map((param) => {
@@ -279,6 +279,7 @@ class JungleSelect extends Component {
         items = items.filter(item => item.getIn(key))
       })
       this.computeItems(this.highlightItems(items), null)
+      this.setState({listOpened: !!filter && !!filter.length && !!additionalItem })
     }).catch((ex) => {
       console.log(ex)
       this.computeItems(Immutable.fromJS([{name: 'error remote'}]))
@@ -417,7 +418,7 @@ class JungleSelect extends Component {
       const filtered = this.filteredItems(sortedItems)
       const limitedSize = Immutable.List.isList(limited) ? limited.size : limited.length
       const filteredSize = Immutable.List.isList(filtered) ? filtered.size : filtered.length
-      if (!limitedSize) { return null }
+      if (!limitedSize && !additionalItem) { return null }
       return (
         <div>
           {limited.map((item, itemIndex) => {
@@ -526,9 +527,9 @@ class JungleSelect extends Component {
 
   listOpened() {
     if (this.selectMode()) {
-      const { searchable } = this.props
+      const { searchable, additionalItem } = this.props
       const { listOpened, filter } = this.state
-      if (this.itemsCount() === 0) {
+      if (this.itemsCount() === 0 && !additionalItem) {
         return false
       } else {
         return listOpened || (searchable && filter && filter.length)

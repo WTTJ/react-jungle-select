@@ -80,7 +80,8 @@ var JungleSelect = function (_Component) {
           itemsId = _this$props$remote.itemsId,
           queryParams = _this$props$remote.queryParams,
           searchParam = _this$props$remote.searchParam,
-          searchableAttributes = _this$props.searchableAttributes;
+          searchableAttributes = _this$props.searchableAttributes,
+          additionalItem = _this$props.additionalItem;
 
 
       var params = _extends(_defineProperty({}, searchParam || 'q', filter), queryParams);
@@ -100,6 +101,7 @@ var JungleSelect = function (_Component) {
           });
         });
         _this.computeItems(_this.highlightItems(items), null);
+        _this.setState({ listOpened: !!filter && !!filter.length && !!additionalItem });
       }).catch(function (ex) {
         console.log(ex);
         _this.computeItems(_immutable2.default.fromJS([{ name: 'error remote' }]));
@@ -383,7 +385,7 @@ var JungleSelect = function (_Component) {
       this.setState({
         filter: filter,
         highlighted: selectFirstItem ? 0 : null,
-        listOpened: filter && filter.length
+        listOpened: filter && filter.length && !remote
       });
     }
   }, {
@@ -581,7 +583,7 @@ var JungleSelect = function (_Component) {
         var filtered = this.filteredItems(sortedItems);
         var limitedSize = _immutable2.default.List.isList(limited) ? limited.size : limited.length;
         var filteredSize = _immutable2.default.List.isList(filtered) ? filtered.size : filtered.length;
-        if (!limitedSize) {
+        if (!limitedSize && !additionalItem) {
           return null;
         }
         return _react2.default.createElement(
@@ -715,12 +717,14 @@ var JungleSelect = function (_Component) {
     key: 'listOpened',
     value: function listOpened() {
       if (this.selectMode()) {
-        var searchable = this.props.searchable;
+        var _props7 = this.props,
+            searchable = _props7.searchable,
+            additionalItem = _props7.additionalItem;
         var _state3 = this.state,
             listOpened = _state3.listOpened,
             filter = _state3.filter;
 
-        if (this.itemsCount() === 0) {
+        if (this.itemsCount() === 0 && !additionalItem) {
           return false;
         } else {
           return listOpened || searchable && filter && filter.length;
@@ -748,9 +752,9 @@ var JungleSelect = function (_Component) {
   }, {
     key: 'renderSelectedItems',
     value: function renderSelectedItems(items) {
-      var _props7 = this.props,
-          renderSelectedItem = _props7.renderSelectedItem,
-          renderItem = _props7.renderItem;
+      var _props8 = this.props,
+          renderSelectedItem = _props8.renderSelectedItem,
+          renderItem = _props8.renderItem;
 
       var renderFunction = renderSelectedItem || renderItem;
       return items.map(function (item, i) {
@@ -846,14 +850,14 @@ var JungleSelect = function (_Component) {
         'tab': this.onTab.bind(this),
         'shift+tab': this.onTab.bind(this)
       };
-      var _props8 = this.props,
-          searchable = _props8.searchable,
-          listWrapper = _props8.listWrapper,
-          classList = _props8.classList,
-          clearable = _props8.clearable,
-          mode = _props8.mode,
-          className = _props8.className,
-          iconNode = _props8.iconNode;
+      var _props9 = this.props,
+          searchable = _props9.searchable,
+          listWrapper = _props9.listWrapper,
+          classList = _props9.classList,
+          clearable = _props9.clearable,
+          mode = _props9.mode,
+          className = _props9.className,
+          iconNode = _props9.iconNode;
       var _state4 = this.state,
           filter = _state4.filter,
           focused = _state4.focused;
