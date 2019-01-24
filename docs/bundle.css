@@ -365,6 +365,9 @@ a {
         outline: none;
         border-color: #5E9ED6;
         box-shadow: 0 0 5px #9ECAED; }
+.example-scroll-keyboard .jungle-select-list {
+  max-height: 300px;
+  overflow-y: scroll; }
 .react-tabs [role="tablist"] {
   display: flex;
   margin-bottom: 26px; }
@@ -398,9 +401,6 @@ a {
       box-shadow: none;
       border: none;
       outline: none; }
-.example-scroll-keyboard .jungle-select-list {
-  max-height: 300px;
-  overflow-y: scroll; }
 * {
   margin: 0;
   padding: 0; }
