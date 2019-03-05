@@ -968,7 +968,7 @@ JungleSelect.propTypes = {
   }),
 
   classList: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  placeholder: _propTypes2.default.string,
+  placeholder: _propTypes2.default.node,
   renderItem: _propTypes2.default.func,
   renderGroup: _propTypes2.default.func,
   renderSelectedItem: _propTypes2.default.func,
