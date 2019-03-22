@@ -1,6 +1,6 @@
 {
   "name": "react-jungle-select",
-  "version": "0.1.0-alpha3",
+  "version": "0.1.0-alpha4",
   "description": "React select and list component. Including search, mouse and keyboard support",
   "main": "dist/index.js",
   "repository": "https://github.com/WTTJ/react-jungle-select",
