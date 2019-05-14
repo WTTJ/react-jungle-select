@@ -7,6 +7,7 @@ import Immutable from 'immutable'
 import onClickOutside from 'react-onclickoutside'
 import { remove as removeDiacritics, replacementList } from 'diacritics'
 import debounce from 'lodash/debounce'
+import { stringify } from 'qs'
 
 class JungleSelect extends Component {
   state = {
@@ -265,10 +266,7 @@ class JungleSelect extends Component {
     const { remote: { baseUrl, itemsId, queryParams, searchParam }, searchableAttributes, additionalItem } = this.props
 
     let params = { [searchParam || 'q']: filter, ...queryParams }
-    let queryString = Object.entries(params).map((param) => {
-      return `${param[0]}=${param[1]}`
-    })
-    const url = `${baseUrl}?${queryString.join('&')}`
+    const url = `${baseUrl}?${stringify(params, { arrayFormat: 'brackets' })}`
 
     fetch(url).then((response) => {
       return response.json()

@@ -42,6 +42,8 @@ var _debounce = require('lodash/debounce');
 
 var _debounce2 = _interopRequireDefault(_debounce);
 
+var _qs = require('qs');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -85,10 +87,7 @@ var JungleSelect = function (_Component) {
 
 
       var params = _extends(_defineProperty({}, searchParam || 'q', filter), queryParams);
-      var queryString = Object.entries(params).map(function (param) {
-        return param[0] + '=' + param[1];
-      });
-      var url = baseUrl + '?' + queryString.join('&');
+      var url = baseUrl + '?' + (0, _qs.stringify)(params, { arrayFormat: 'brackets' });
 
       fetch(url).then(function (response) {
         return response.json();
